@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 import { BsFillSendFill } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
+import { MdAddCall, MdCallEnd } from 'react-icons/md';
 import Section from './components/Section';
 import Transition from './components/Transition';
 import './App.css';
@@ -23,6 +24,7 @@ function App() {
   const [transited, setTransited] = useState(false);
   const selfVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
+  const [isAnswered, setIsAnswered] = useState(false);
   const [peersOnConference, setPeerOnConference] = useState([]);
 
   useEffect(() => {
@@ -62,6 +64,7 @@ function App() {
         setConferenceId(call.peer);
         call.answer(selfStream);
         setTransited(true);
+        setIsAnswered(true);
         setVideoRef(selfVideoRef, selfStream);
         call.on('stream', (remoteStream) => {
           setVideoRef(remoteVideoRef, remoteStream);
@@ -74,6 +77,7 @@ function App() {
           selfVideoRef.current.srcObject = null;
           if (selfVideoRef.current.srcObject)
             console.log('answer call self video');
+          setIsAnswered(false);
         });
         call.on('error', (e) => console.log('error in peer call'));
         setPeerCall(call);
@@ -113,6 +117,7 @@ function App() {
       console.log('calling: ', selfStream);
       setVideoRef(selfVideoRef, selfStream);
       const newCall = peer.call(conferenceId, selfStream);
+      setIsAnswered(true);
       newCall.on('stream', (remoteStream) => {
         setVideoRef(remoteVideoRef, remoteStream);
       });
@@ -124,6 +129,7 @@ function App() {
         selfVideoRef.current.srcObject = null;
         if (selfVideoRef.current.srcObject)
           console.log('client call self video');
+        setIsAnswered(false);
       });
       newCall.on('error', (e) => console.log('error in starting call'));
       setCall(newCall);
@@ -135,11 +141,6 @@ function App() {
   const endCall = () => {
     call?.close();
     peerCall?.close();
-    // remoteVideoRef.current.srcObject = null;
-    // if (remoteVideoRef.current.srcObject)
-    //   console.log('answer call remote video');
-    // selfVideoRef.current.srcObject = null;
-    // if (selfVideoRef.current.srcObject) console.log('answer call self video');
     console.log('call ended');
   };
 
@@ -155,7 +156,7 @@ function App() {
   const usersProps = {
     ...commonProps,
     title: 'Users',
-    list: availableUsers,
+    list: availableUsers.filter((u) => u !== socket.id),
     forRooms: false,
   };
   const roomsProps = {
@@ -183,10 +184,6 @@ function App() {
       <Transition transited={transited} isConference>
         <div className="p-4 text-center text-lg">
           Conference id : <span className="font-bold">{conferenceId}</span>
-          <button onClick={async () => await startCall(conferenceId)}>
-            Call
-          </button>
-          <button onClick={() => endCall()}>End</button>
         </div>
         <div className="w-full h-40 mb-2">
           <video className="w-full h-full" ref={selfVideoRef}></video>
@@ -207,6 +204,25 @@ function App() {
             icon={<BsFillSendFill />}
             disabled={!message}
           />
+        </div>
+        <div className="mt-2 flex justify-center bg-slate-700 rounded-sm hover:cursor-pointer">
+          {isAnswered ? (
+            <Button
+              action={'End call'}
+              onClick={endCall}
+              icon={<MdCallEnd />}
+              disabled={false}
+              full
+            />
+          ) : (
+            <Button
+              action={'Start call'}
+              onClick={async () => await startCall(conferenceId)}
+              icon={<MdAddCall />}
+              disabled={false}
+              full
+            />
+          )}
         </div>
         <div className="mt-2 flex justify-center bg-slate-700 rounded-sm hover:cursor-pointer">
           <Button
