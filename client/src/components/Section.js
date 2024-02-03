@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { MdJoinFull, MdLibraryAdd } from 'react-icons/md';
 import { IoEnter, IoLogOut } from 'react-icons/io5';
 import { AiFillMessage } from 'react-icons/ai';
-import { RiGradienterFill } from 'react-icons/ri';
 import Button from './Button';
 
 export default function Section({
@@ -20,9 +19,9 @@ export default function Section({
   leaveRoom,
   joinedRooms,
 }) {
-  const enterConference = (conference) => {
+  const enterConference = (conferenceId) => {
     setTransited(true);
-    setConferenceId(conference);
+    setConferenceId(conferenceId);
   };
   return (
     <div className="p-8">

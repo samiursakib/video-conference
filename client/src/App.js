@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { Peer } from 'peerjs';
 import { BsFillSendFill } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import Section from './components/Section';
 import Transition from './components/Transition';
 import './App.css';
 import Button from './components/Button';
+import { getMedia, setVideoRef } from './utils';
 
 function App() {
   const [socket, setSocket] = useState(null);
+  const [peer, setPeer] = useState(null);
+  const [call, setCall] = useState(null);
+  const [peerCall, setPeerCall] = useState(null);
   const [message, setMessage] = useState('');
   const [room, setRoom] = useState('');
   const [availableUsers, setAvailableUsers] = useState([]);
@@ -16,10 +21,21 @@ function App() {
   const [joinedRooms, setJoinedRooms] = useState([]);
   const [conferenceId, setConferenceId] = useState('');
   const [transited, setTransited] = useState(false);
+  const selfVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+  const [peersOnConference, setPeerOnConference] = useState([]);
 
   useEffect(() => {
     const newSocket = io('http://localhost:8080');
     setSocket(newSocket);
+    newSocket.on('connect', () => {
+      const newPeer = new Peer(newSocket.id, {
+        host: 'localhost',
+        port: 9000,
+        path: '/',
+      });
+      setPeer(newPeer);
+    });
     return () => newSocket.close();
   }, []);
 
@@ -38,7 +54,34 @@ function App() {
       setAvailableRooms(data.rooms);
     });
     socket?.emit('fetchData');
-  }, [socket]);
+
+    // peer?.on('open', (peerId) => console.log('My peer id is: ', peerId));
+    peer?.on('call', async (call) => {
+      try {
+        const selfStream = await getMedia();
+        setConferenceId(call.peer);
+        call.answer(selfStream);
+        setTransited(true);
+        setVideoRef(selfVideoRef, selfStream);
+        call.on('stream', (remoteStream) => {
+          setVideoRef(remoteVideoRef, remoteStream);
+        });
+        call.on('close', () => {
+          console.log('from peer call ended');
+          remoteVideoRef.current.srcObject = null;
+          if (remoteVideoRef.current.srcObject)
+            console.log('answer call remote video');
+          selfVideoRef.current.srcObject = null;
+          if (selfVideoRef.current.srcObject)
+            console.log('answer call self video');
+        });
+        call.on('error', (e) => console.log('error in peer call'));
+        setPeerCall(call);
+      } catch (e) {
+        console.log('error while receiving call');
+      }
+    });
+  }, [socket, peer]);
 
   const sendMessage = (msg, to) => {
     console.log('sending message');
@@ -62,6 +105,42 @@ function App() {
 
   const reconnectSocket = () => {
     socket.socket.connect();
+  };
+
+  const startCall = async (conferenceId) => {
+    try {
+      const selfStream = await getMedia();
+      console.log('calling: ', selfStream);
+      setVideoRef(selfVideoRef, selfStream);
+      const newCall = peer.call(conferenceId, selfStream);
+      newCall.on('stream', (remoteStream) => {
+        setVideoRef(remoteVideoRef, remoteStream);
+      });
+      newCall.on('close', () => {
+        console.log('from client call ended');
+        remoteVideoRef.current.srcObject = null;
+        if (remoteVideoRef.current.srcObject)
+          console.log('client call remote video');
+        selfVideoRef.current.srcObject = null;
+        if (selfVideoRef.current.srcObject)
+          console.log('client call self video');
+      });
+      newCall.on('error', (e) => console.log('error in starting call'));
+      setCall(newCall);
+    } catch (e) {
+      console.log('error while trying to get media stream');
+    }
+  };
+
+  const endCall = () => {
+    call?.close();
+    peerCall?.close();
+    // remoteVideoRef.current.srcObject = null;
+    // if (remoteVideoRef.current.srcObject)
+    //   console.log('answer call remote video');
+    // selfVideoRef.current.srcObject = null;
+    // if (selfVideoRef.current.srcObject) console.log('answer call self video');
+    console.log('call ended');
   };
 
   const commonProps = {
@@ -104,6 +183,16 @@ function App() {
       <Transition transited={transited} isConference>
         <div className="p-4 text-center text-lg">
           Conference id : <span className="font-bold">{conferenceId}</span>
+          <button onClick={async () => await startCall(conferenceId)}>
+            Call
+          </button>
+          <button onClick={() => endCall()}>End</button>
+        </div>
+        <div className="w-full h-40 mb-2">
+          <video className="w-full h-full" ref={selfVideoRef}></video>
+        </div>{' '}
+        <div className="w-full h-40 mb-2">
+          <video className="w-full h-full" ref={remoteVideoRef}></video>
         </div>
         <div className="flex items-center border border-slate-800 rounded">
           <input
