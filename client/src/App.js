@@ -66,15 +66,18 @@ function App() {
     socket?.on('receiveStream', (s) =>
       setPeersOnConference((prev) => ({ ...prev, ...s }))
     );
-    socket?.on('callOthersTriggered', () => {
+    socket?.on('receiveCallOthersTriggered', (peerIds) => {
       // alert('call triggered');
+      setPeersOnConference((prev) =>
+        peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
+      );
       setCallOthersTriggered(true);
     });
     socket?.emit('fetchData');
     peer?.on('call', async (call) => {
       try {
         const selfStream = await getMedia();
-        // setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
+        setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
         setTransited(true);
         setIsAnswered(true);
@@ -176,6 +179,7 @@ function App() {
   const startGroupCall = async () => {
     try {
       socket.emit('callOthersTriggered', conferenceId);
+      // socket.emit('fetchPeersOnConference', conferenceId);
       // const selfStream = await getMedia();
       // setPeersOnConference((prev) => ({
       //   ...prev,
@@ -256,7 +260,7 @@ function App() {
         <div className="flex flex-wrap">
           {/* <PeerVideo key={'local'} stream={localStream} /> */}
           {Object.keys(peersOnConference).map((key) => (
-            <PeerVideo key={key} stream={peersOnConference[key]} />
+            <PeerVideo key={key} peerId={key} stream={peersOnConference[key]} />
           ))}
         </div>
         <div className="flex items-center border border-slate-800 rounded">
