@@ -1,16 +1,22 @@
 const fetchData = (io) => {
   const sids = io.of('/').adapter.sids;
   const users = Array.from(sids.keys());
-  let rooms = new Set([]);
-  for (const [id, roomSet] of sids.entries()) {
-    for (const room of Array.from(roomSet)) {
-      if (room !== id) rooms.add(room);
-    }
+  let rooms = [];
+  for (const [id, _] of io.of('/').adapter.rooms.entries()) {
+    if (users.indexOf(id) === -1) rooms.push(id);
   }
   return {
     users,
-    rooms: Array.from(rooms),
+    rooms,
   };
 };
 
-module.exports = { fetchData };
+const fetchPeersOnConference = (io, room) => {
+  const rooms = io.of('/').adapter.rooms;
+  for (const [id, value] of rooms.entries()) {
+    if (id === room) return Array.from(value);
+  }
+  return [];
+};
+
+module.exports = { fetchData, fetchPeersOnConference };
