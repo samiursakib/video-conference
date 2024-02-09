@@ -55,6 +55,16 @@ io.on('connection', (socket) => {
     socket.emit('receiveData', data);
   });
 
+  socket.on('sendStream', (room, s) => {
+    console.log(s);
+    socket.broadcast.to(room).emit('receiveStream', s);
+  });
+
+  socket.on('callOthersTriggered', (room) => {
+    console.log('call to room: ', room);
+    io.to(room).emit('callOthersTriggered');
+  });
+
   socket.on('forceDisconnect', () => {
     socket.disconnect(true);
   });
