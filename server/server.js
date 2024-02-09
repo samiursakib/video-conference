@@ -2,7 +2,7 @@ const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
 const { PeerServer } = require('peer');
-const { fetchData } = require('./utils');
+const { fetchData, fetchPeersOnConference } = require('./utils');
 
 const port = process.env.PORT || 8080;
 
@@ -53,6 +53,11 @@ io.on('connection', (socket) => {
   socket.on('fetchData', () => {
     const data = fetchData(io);
     socket.emit('receiveData', data);
+  });
+
+  socket.on('callOthersTriggered', (room) => {
+    const peersOnConference = fetchPeersOnConference(io, room);
+    io.to(room).emit('receiveCallOthersTriggered', peersOnConference);
   });
 
   socket.on('forceDisconnect', () => {

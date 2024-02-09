@@ -9,6 +9,7 @@ import Transition from './components/Transition';
 import './App.css';
 import Button from './components/Button';
 import { getMedia, setVideoRef } from './utils';
+import PeerVideo from './components/PeerVideo';
 
 function App() {
   const [socket, setSocket] = useState(null);
@@ -25,7 +26,11 @@ function App() {
   const selfVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const [isAnswered, setIsAnswered] = useState(false);
-  const [peersOnConference, setPeerOnConference] = useState([]);
+  const [peersOnConference, setPeersOnConference] = useState({});
+  const [callOthersTriggered, setCallOthersTriggered] = useState(false);
+  const remoteStreams = {};
+
+  // const [localStream, setLocalStream] = useState(null);
 
   useEffect(() => {
     const newSocket = io('http://localhost:8080');
@@ -46,37 +51,45 @@ function App() {
       alert(`${msg} from ${from}`);
     });
     socket?.on('joinRoomAlert', (socketId, room) => {
-      alert(`${socketId} joined the room ${room}`);
+      // alert(`${socketId} joined the room ${room}`);
     });
     socket?.on('leaveRoomAlert', (socketId, room) => {
       alert(`${socketId} left the room ${room}`);
+    });
+    socket?.on('receivePeersOnConference', (peersOnConference) => {
+      setPeersOnConference(peersOnConference);
     });
     socket?.on('receiveData', (data) => {
       setAvailableUsers(data.users);
       setAvailableRooms(data.rooms);
     });
+    socket?.on('receiveStream', (s) =>
+      setPeersOnConference((prev) => ({ ...prev, ...s }))
+    );
+    socket?.on('receiveCallOthersTriggered', (peerIds) => {
+      // alert('call triggered');
+      setPeersOnConference((prev) =>
+        peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
+      );
+      setCallOthersTriggered(true);
+    });
     socket?.emit('fetchData');
-
-    // peer?.on('open', (peerId) => console.log('My peer id is: ', peerId));
     peer?.on('call', async (call) => {
       try {
         const selfStream = await getMedia();
-        setConferenceId(call.peer);
+        setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
         setTransited(true);
         setIsAnswered(true);
-        setVideoRef(selfVideoRef, selfStream);
         call.on('stream', (remoteStream) => {
-          setVideoRef(remoteVideoRef, remoteStream);
+          setPeersOnConference((prev) => ({
+            ...prev,
+            [call.peer]: remoteStream,
+          }));
         });
         call.on('close', () => {
-          console.log('from peer call ended');
           remoteVideoRef.current.srcObject = null;
-          if (remoteVideoRef.current.srcObject)
-            console.log('answer call remote video');
           selfVideoRef.current.srcObject = null;
-          if (selfVideoRef.current.srcObject)
-            console.log('answer call self video');
           setIsAnswered(false);
         });
         call.on('error', (e) => console.log('error in peer call'));
@@ -87,19 +100,44 @@ function App() {
     });
   }, [socket, peer]);
 
+  useEffect(() => {
+    const callOthers = async () => {
+      if (callOthersTriggered) {
+        const selfStream = await getMedia();
+        setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
+        console.log('before calling: ', peersOnConference);
+        for (const remotePeer in peersOnConference) {
+          if (remotePeer === peer.id) continue;
+          console.log(remotePeer);
+          const call = peer.call(remotePeer, selfStream);
+          call.on('stream', (remoteStream) => {
+            setPeersOnConference((prev) => ({
+              ...prev,
+              [remotePeer]: remoteStream,
+            }));
+          });
+          console.log('after calling: ', peersOnConference);
+        }
+      }
+    };
+    // console.log('this useEffect is continuously running');
+    callOthers();
+  }, [callOthersTriggered, peer]);
+
   const sendMessage = (msg, to) => {
-    console.log('sending message');
     socket.emit('sendMessage', msg, to);
     setMessage('');
   };
 
   const joinRoom = (room) => {
     socket.emit('joinRoom', room);
+    socket.emit('fetchPeersOnConference', room);
     setJoinedRooms((prev) => [...prev, room]);
   };
 
   const leaveRoom = (room) => {
     socket.emit('leaveRoom', room);
+    socket.emit('fetchPeersOnConference', room);
     setJoinedRooms((prev) => prev.filter((r) => room !== r));
   };
 
@@ -111,10 +149,9 @@ function App() {
     socket.socket.connect();
   };
 
-  const startCall = async (conferenceId) => {
+  const startPrivateCall = async (conferenceId) => {
     try {
       const selfStream = await getMedia();
-      console.log('calling: ', selfStream);
       setVideoRef(selfVideoRef, selfStream);
       const newCall = peer.call(conferenceId, selfStream);
       setIsAnswered(true);
@@ -122,13 +159,8 @@ function App() {
         setVideoRef(remoteVideoRef, remoteStream);
       });
       newCall.on('close', () => {
-        console.log('from client call ended');
         remoteVideoRef.current.srcObject = null;
-        if (remoteVideoRef.current.srcObject)
-          console.log('client call remote video');
         selfVideoRef.current.srcObject = null;
-        if (selfVideoRef.current.srcObject)
-          console.log('client call self video');
         setIsAnswered(false);
       });
       newCall.on('error', (e) => console.log('error in starting call'));
@@ -138,14 +170,46 @@ function App() {
     }
   };
 
-  const endCall = () => {
+  const endPrivateCall = () => {
     call?.close();
     peerCall?.close();
     console.log('call ended');
   };
 
+  const startGroupCall = async () => {
+    try {
+      socket.emit('callOthersTriggered', conferenceId);
+      // socket.emit('fetchPeersOnConference', conferenceId);
+      // const selfStream = await getMedia();
+      // setPeersOnConference((prev) => ({
+      //   ...prev,
+      //   [socket.id]: selfStream,
+      // }));
+      // socket.emit('sendStream', conferenceId, { [socket.id]: selfStream });
+      // const array = Object.keys(peersOnConference);
+      // for (let i = 0; i < array.length - 1; i++) {
+      //   for (let j = i + 1; j < array.length; j++) {
+      //     const call = peer.call(array[i], selfStream);
+      //     call.on('stream', (remoteStream) => {
+      //       // setPeersOnConference((prev) => ({
+      //       //   ...prev,
+      //       //   [remotePeer]: remoteStream,
+      //       // }));
+      //     });
+      //     call.on('error', (e) => console.log('error starting group call'));
+      //   }
+      // }
+    } catch (e) {
+      console.log('error while starting group call in catch block');
+    }
+  };
+
+  const endGroupCall = () => {};
+
   const commonProps = {
     setConferenceId,
+    peersOnConference,
+    setPeersOnConference,
     setTransited,
     message,
     setMessage,
@@ -169,6 +233,8 @@ function App() {
     joinedRooms,
   };
 
+  console.log('peersOnConference: ', peersOnConference);
+
   return (
     <div className="container max-w-[900px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
       <Transition transited={transited} isConference={false}>
@@ -185,11 +251,17 @@ function App() {
         <div className="p-4 text-center text-lg">
           Conference id : <span className="font-bold">{conferenceId}</span>
         </div>
-        <div className="w-full h-40 mb-2">
+        {/* <div className="w-full h-40 mb-2">
           <video className="w-full h-full" ref={selfVideoRef}></video>
         </div>{' '}
         <div className="w-full h-40 mb-2">
           <video className="w-full h-full" ref={remoteVideoRef}></video>
+        </div> */}
+        <div className="flex flex-wrap">
+          {/* <PeerVideo key={'local'} stream={localStream} /> */}
+          {Object.keys(peersOnConference).map((key) => (
+            <PeerVideo key={key} peerId={key} stream={peersOnConference[key]} />
+          ))}
         </div>
         <div className="flex items-center border border-slate-800 rounded">
           <input
@@ -209,7 +281,7 @@ function App() {
           {isAnswered ? (
             <Button
               action={'End call'}
-              onClick={endCall}
+              onClick={endPrivateCall}
               icon={<MdCallEnd />}
               disabled={false}
               full
@@ -217,7 +289,7 @@ function App() {
           ) : (
             <Button
               action={'Start call'}
-              onClick={async () => await startCall(conferenceId)}
+              onClick={async () => await startGroupCall(conferenceId)}
               icon={<MdAddCall />}
               disabled={false}
               full
