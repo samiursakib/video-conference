@@ -5,7 +5,7 @@ const { Server } = require('socket.io');
 const { PeerServer } = require('peer');
 const { fetchData, fetchPeersOnConference } = require('./utils');
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 80;
 
 const app = express();
 
@@ -13,7 +13,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
-    // methods: ['GET', 'POST'],
+    methods: ['GET', 'POST'],
   },
 });
 const peerServer = new PeerServer({
