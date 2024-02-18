@@ -7,9 +7,6 @@ const { fetchData, fetchPeersOnConference } = require('./utils');
 const port = process.env.PORT || 8080;
 
 const app = express();
-// app.use(cors());
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -57,7 +54,12 @@ io.on('connection', (socket) => {
 
   socket.on('callOthersTriggered', (room) => {
     const peersOnConference = fetchPeersOnConference(io, room);
-    io.to(room).emit('receiveCallOthersTriggered', peersOnConference);
+    io.to(room).emit('receiveCallOthersTriggered', peersOnConference, room);
+  });
+
+  socket.on('leaveCall', (room, socketId) => {
+    console.log(socketId);
+    socket.broadcast.to(room).emit('leaveCallAlert', socket.id, room);
   });
 
   socket.on('forceDisconnect', () => {

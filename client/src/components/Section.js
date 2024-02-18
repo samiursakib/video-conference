@@ -18,10 +18,14 @@ export default function Section({
   joinRoom,
   leaveRoom,
   joinedRooms,
+  setGroupCall,
 }) {
   const enterConference = (conferenceId) => {
     setTransited(true);
     setConferenceId(conferenceId);
+    if (forRooms) {
+      setGroupCall(true);
+    }
   };
   return (
     <div className="p-8">

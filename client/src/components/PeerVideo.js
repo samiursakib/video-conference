@@ -7,7 +7,7 @@ const PeerVideo = ({ peerId, stream }) => {
     setVideoRef(videoRef, stream);
   }, [stream]);
   return (
-    <div className="w-1/2 border border-red-500">
+    <div className="w-1/3 border border-red-500">
       <h1>{peerId}</h1>
       <video className="w-full h-full" ref={videoRef}></video>
     </div>
