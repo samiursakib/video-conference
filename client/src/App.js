@@ -99,9 +99,9 @@ function App() {
         setIsAnswered(true);
         const selfStream = await getMedia();
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
-        // if (!callOthersTriggered) {
-        //   setConferenceId(call.peer);
-        //   setVideoRef(selfVideoRef, selfStream);
+        // if (!groupCall) {
+        // setConferenceId(call.peer); //uncomment for private call
+        // setVideoRef(selfVideoRef, selfStream); //uncomment for private call
         // }
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
@@ -110,8 +110,8 @@ function App() {
             [call.peer]: remoteStream,
           }));
           // console.log('before ending call: ', peersOnConference);
-          // if (!callOthersTriggered) {
-          //   setVideoRef(remoteVideoRef, remoteStream);
+          // if (!groupCall) {
+          // setVideoRef(remoteVideoRef, remoteStream); //uncomment for private call
           // }
         });
         call.on('close', () => {
@@ -123,9 +123,9 @@ function App() {
           setPeersOnConference({});
           setIsAnswered(false);
           console.log('call ended from: ', call.peer);
-          // } else {
-          //   selfVideoRef.current.srcObject = null;
-          //   remoteVideoRef.current.srcObject = null;
+          // if (!groupCall) {
+          // selfVideoRef.current.srcObject = null; //uncomment for private call
+          // remoteVideoRef.current.srcObject = null; //uncomment for private call
           // }
         });
         call.on('error', (e) => console.log('error in peer call'));
@@ -310,7 +310,7 @@ function App() {
         <div className="p-4 text-center text-lg">
           Conference id : <span className="font-bold">{conferenceId}</span>
         </div>
-        {!groupCall && (
+        {!groupCall ? (
           <>
             <div className="w-full h-40 mb-2">
               <video className="w-full h-full" ref={selfVideoRef}></video>
@@ -319,13 +319,17 @@ function App() {
               <video className="w-full h-full" ref={remoteVideoRef}></video>
             </div>
           </>
+        ) : (
+          <div className="flex flex-wrap flex-col">
+            {Object.keys(peersOnConference).map((key) => (
+              <PeerVideo
+                key={key}
+                peerId={key}
+                stream={peersOnConference[key]}
+              />
+            ))}
+          </div>
         )}
-        <div className="flex flex-wrap flex-col">
-          {/* <PeerVideo key={'local'} stream={localStream} /> */}
-          {Object.keys(peersOnConference).map((key) => (
-            <PeerVideo key={key} peerId={key} stream={peersOnConference[key]} />
-          ))}
-        </div>
         <div className="flex items-center border border-slate-800 rounded">
           <input
             className="block h-full w-full"
