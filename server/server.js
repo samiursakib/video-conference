@@ -21,11 +21,13 @@ const peerServer = new PeerServer({
   path: '/',
 });
 
-// app.use(
-//   cors({
-//     origin: ['https://video-conference-client.vercel.app'],
-//   })
-// );
+app.use(
+  cors({
+    origin: '*',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 
 app.get('/', (req, res) => {
   res.send({ title: 'user connected' });
