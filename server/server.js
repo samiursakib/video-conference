@@ -12,7 +12,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: ['https://video-conference-client.vercel.app'],
   },
 });
 const peerServer = new PeerServer({
@@ -20,7 +20,11 @@ const peerServer = new PeerServer({
   path: '/',
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ['https://video-conference-client.vercel.app'],
+  })
+);
 
 app.get('/', (req, res) => {
   res.send({ title: 'user connected' });
