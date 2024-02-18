@@ -122,6 +122,7 @@ function App() {
           // setPeerCalls({});
           setPeersOnConference({});
           setIsAnswered(false);
+          selfStream.getTracks().forEach((track) => track.stop());
           console.log('call ended from: ', call.peer);
           // if (!groupCall) {
           // selfVideoRef.current.srcObject = null; //uncomment for private call
@@ -158,6 +159,7 @@ function App() {
             setIsAnswered(false);
             // setPeersOnConference({});
             // setCalls({});
+            selfStream.getTracks().forEach((track) => track.stop());
           });
           call?.on('error', (e) => console.log('error while on group call', e));
           setCalls((prev) => ({ ...prev, [remotePeer]: call }));
@@ -258,6 +260,7 @@ function App() {
       peerCalls[key]?.close();
     }
     setCallOthersTriggered(false);
+    setPeersOnConference({});
     // socket.emit('leaveCall', conferenceId, socket.id);
   };
 
@@ -296,6 +299,7 @@ function App() {
 
   return (
     <div className="container max-w-[900px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
+      <h4>{conferenceId}</h4>
       <Transition transited={transited} isConference={false}>
         <div className="p-4 text-center text-lg">
           Your id : <span className="font-bold">{socket?.id}</span>
@@ -308,7 +312,7 @@ function App() {
 
       <Transition transited={transited} isConference>
         <div className="p-4 text-center text-lg">
-          Conference id : <span className="font-bold">{conferenceId}</span>
+          {/* Conference id : <span className="font-bold">{conferenceId}</span> */}
         </div>
         {!groupCall ? (
           <>
