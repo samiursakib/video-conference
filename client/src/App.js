@@ -33,13 +33,13 @@ function App() {
   const [groupCall, setGroupCall] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:8080');
+    const newSocket = io('https://video-conference-server.vercel.app');
     setSocket(newSocket);
     newSocket.on('connect', () => {
       const newPeer = new Peer(newSocket.id, {
-        host: 'localhost',
-        port: 9000,
-        path: '/',
+        // host: 'localhost',
+        // port: 9000,
+        // path: '/',
       });
       setPeer(newPeer);
     });
