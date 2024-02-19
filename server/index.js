@@ -12,7 +12,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: 'https://video-conference-client.vercel.app',
     methods: ['GET', 'POST'],
   },
 });
@@ -23,9 +23,8 @@ const peerServer = new PeerServer({
 
 app.use(
   cors({
-    origin: '*',
+    origin: 'https://video-conference-client.vercel.app',
     credentials: true,
-    optionsSuccessStatus: 200,
   })
 );
 
