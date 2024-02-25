@@ -26,7 +26,9 @@ app.options('/', function (req, res) {
   res.end();
 });
 
-app.use('/', indexRouter);
+app.use('/', (req, res) => {
+  res.json({ title: 'got from server' });
+});
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
