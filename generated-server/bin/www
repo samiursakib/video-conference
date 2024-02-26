@@ -7,6 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('generated-server:server');
 var http = require('http');
+const { Server } = require('socket.io');
+const { PeerServer } = require('peer');
+const { fetchData, fetchPeersOnConference } = require('./utils');
 
 /**
  * Get port from environment and store in Express.
@@ -21,6 +24,67 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+  },
+});
+const peerServer = new PeerServer({
+  port: 9000,
+  path: '/',
+});
+
+io.on('connection', (socket) => {
+  console.log('new user connected: ', socket.id);
+  const data = fetchData(io);
+  io.emit('receiveData', data);
+
+  socket.on('sendMessage', (msg, to) => {
+    const from = socket.id;
+    console.log('message from: ', from);
+    socket.broadcast.to(to).emit('receiveMessage', msg, from);
+  });
+
+  socket.on('joinRoom', (room) => {
+    socket.join(room);
+    const data = fetchData(io);
+    io.emit('receiveData', data);
+    socket.broadcast.to(room).emit('joinRoomAlert', socket.id, room);
+  });
+
+  socket.on('leaveRoom', (room) => {
+    socket.leave(room);
+    const data = fetchData(io);
+    io.emit('receiveData', data);
+    socket.broadcast.to(room).emit('leaveRoomAlert', socket.id, room);
+  });
+
+  socket.on('fetchData', () => {
+    const data = fetchData(io);
+    socket.emit('receiveData', data);
+  });
+
+  socket.on('callOthersTriggered', (room) => {
+    const peersOnConference = fetchPeersOnConference(io, room);
+    io.to(room).emit('receiveCallOthersTriggered', peersOnConference, room);
+  });
+
+  socket.on('leaveCall', (room, socketId) => {
+    console.log(socketId);
+    socket.broadcast.to(room).emit('leaveCallAlert', socket.id, room);
+  });
+
+  socket.on('forceDisconnect', () => {
+    socket.disconnect(true);
+  });
+
+  socket.on('disconnect', () => {
+    const data = fetchData(io);
+    io.emit('receiveData', data);
+    console.log('user has left from server', socket.id);
+  });
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -58,9 +122,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -83,8 +145,6 @@ function onError(error) {
 
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
