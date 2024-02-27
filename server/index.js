@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
 const { PeerServer } = require('peer');
+const serverless = require('serverless-http');
 const { fetchData, fetchPeersOnConference } = require('./utils');
 
 const port = process.env.PORT || 80;
@@ -102,4 +103,4 @@ server.listen(port, () => {
   console.log(`Server running at port: ${port}`);
 });
 
-// module.exports = app;
+module.exports.handler = serverless(app);
