@@ -102,4 +102,4 @@ server.listen(port, () => {
   console.log(`Server running at port: ${port}`);
 });
 
-module.exports = app;
+// module.exports = app;
