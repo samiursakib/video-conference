@@ -22,12 +22,12 @@ const peerServer = new PeerServer({
   path: '/',
 });
 
-app.use(
-  cors({
-    origin: 'https://video-conference-client.vercel.app',
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: 'https://video-conference-client.vercel.app',
+//     credentials: true,
+//   })
+// );
 
 app.options('/', function (req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

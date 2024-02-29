@@ -4,12 +4,12 @@ import { Peer } from 'peerjs';
 import { BsFillSendFill } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { MdAddCall, MdCallEnd } from 'react-icons/md';
+import { getMedia, setVideoRef } from './utils';
 import Section from './components/Section';
 import Transition from './components/Transition';
-import './App.css';
 import Button from './components/Button';
-import { getMedia, setVideoRef } from './utils';
 import PeerVideo from './components/PeerVideo';
+import './App.css';
 
 function App() {
   const [socket, setSocket] = useState(null);
@@ -25,15 +25,15 @@ function App() {
   const [joinedRooms, setJoinedRooms] = useState([]);
   const [conferenceId, setConferenceId] = useState('');
   const [transited, setTransited] = useState(false);
-  const selfVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [peersOnConference, setPeersOnConference] = useState({});
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [groupCall, setGroupCall] = useState(false);
+  const selfVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io('https://video-conference-server.vercel.app');
+    const newSocket = io('https://vc-server-fchv.onrender.com');
     setSocket(newSocket);
     newSocket.on('connect', () => {
       const newPeer = new Peer(newSocket.id, {
@@ -100,8 +100,8 @@ function App() {
         const selfStream = await getMedia();
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         // if (!groupCall) {
-        // setConferenceId(call.peer); //uncomment for private call
-        // setVideoRef(selfVideoRef, selfStream); //uncomment for private call
+        setConferenceId(call.peer); //uncomment for private call
+        setVideoRef(selfVideoRef, selfStream); //uncomment for private call
         // }
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
@@ -109,9 +109,8 @@ function App() {
             ...prev,
             [call.peer]: remoteStream,
           }));
-          // console.log('before ending call: ', peersOnConference);
           // if (!groupCall) {
-          // setVideoRef(remoteVideoRef, remoteStream); //uncomment for private call
+          setVideoRef(remoteVideoRef, remoteStream); //uncomment for private call
           // }
         });
         call.on('close', () => {
@@ -120,13 +119,12 @@ function App() {
           // delete restPeers[call.peer];
           // setCalls({});
           // setPeerCalls({});
-          setPeersOnConference({});
+          // setPeersOnConference({});
           setIsAnswered(false);
           selfStream.getTracks().forEach((track) => track.stop());
-          console.log('call ended from: ', call.peer);
           // if (!groupCall) {
-          // selfVideoRef.current.srcObject = null; //uncomment for private call
-          // remoteVideoRef.current.srcObject = null; //uncomment for private call
+          selfVideoRef.current.srcObject = null; //uncomment for private call
+          remoteVideoRef.current.srcObject = null; //uncomment for private call
           // }
         });
         call.on('error', (e) => console.log('error in peer call'));
@@ -292,28 +290,23 @@ function App() {
     setGroupCall,
   };
 
-  console.log('peersOnConference: ', peersOnConference);
-  console.log(callOthersTriggered);
-  // console.log('calls: ', calls);
-  // console.log('peerCalls: ', peerCalls);
+  // console.log('peersOnConference: ', peersOnConference);
 
   return (
     <div className="container max-w-[900px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
-      <h4>{conferenceId}</h4>
       <Transition transited={transited} isConference={false}>
         <div className="p-4 text-center text-lg">
           Your id : <span className="font-bold">{socket?.id}</span>
         </div>
         <Section {...usersProps} />
         <Section {...roomsProps} />
-        {/* <button onClick={() => disconnectSocket()}>Disconnect</button>
-        <button onClick={() => reconnectSocket()}>Reconnect</button> */}
       </Transition>
 
       <Transition transited={transited} isConference>
         <div className="p-4 text-center text-lg">
-          {/* Conference id : <span className="font-bold">{conferenceId}</span> */}
+          Conference id : <span className="font-bold">{conferenceId}</span>
         </div>
+        <div className="p-4 text-center text-lg"></div>
         {!groupCall ? (
           <>
             <div className="w-full h-40 mb-2">
@@ -324,7 +317,7 @@ function App() {
             </div>
           </>
         ) : (
-          <div className="flex flex-wrap flex-col">
+          <div className="flex flex-wrap gap-5">
             {Object.keys(peersOnConference).map((key) => (
               <PeerVideo
                 key={key}
