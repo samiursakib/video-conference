@@ -341,14 +341,7 @@ function App() {
             disabled={!message}
           />
         </div>
-        <div className="mt-2 flex justify-center bg-slate-700 rounded-sm hover:cursor-pointer">
-          <Button
-            action={'End call'}
-            onClick={groupCall ? endGroupCall : endPrivateCall}
-            icon={<MdCallEnd />}
-            disabled={false}
-            full
-          />
+        <div className="mt-2 gap-2 flex justify-center bg-slate-700 rounded-sm hover:cursor-pointer">
           <Button
             action={'Start call'}
             onClick={async () =>
@@ -357,6 +350,13 @@ function App() {
                 : await startPrivateCall(conferenceId)
             }
             icon={<MdAddCall />}
+            disabled={false}
+            full
+          />
+          <Button
+            action={'End call'}
+            onClick={groupCall ? endGroupCall : endPrivateCall}
+            icon={<MdCallEnd />}
             disabled={false}
             full
           />
