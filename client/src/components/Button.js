@@ -1,16 +1,26 @@
 import React from 'react';
 
-export default function Button({ action, onClick, icon, disabled, full }) {
+export default function Button({
+  className,
+  action,
+  onClick,
+  icon,
+  disabled,
+  full,
+  circle,
+}) {
   return (
     <button
-      className={`flex items-center bg-slate-700 text-[#7b9eff] h-full focus:outline focus:outline-slate-200 px-3 py-1 space-x-2 rounded disabled:text-[#42568d] disabled:bg-slate-900 ${
-        full ? ' w-full justify-center' : ''
-      }`}
+      className={`flex items-center justify-center bg-[#0E8388] focus:outline focus:outline-slate-200 px-3 py-1 space-x-2 ${
+        full ? 'w-full h-full' : ''
+      } disabled:bg-[#0E8388] ${
+        circle ? 'rounded-full w-[40px] h-[40px]' : 'rounded-sm h-full'
+      } ${className ? className : ''}`}
       onClick={onClick}
       disabled={disabled}
     >
       <span className="text-lg">{icon}</span>
-      <span>{action}</span>
+      {action && <span>{action}</span>}
     </button>
   );
 }

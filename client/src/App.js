@@ -10,6 +10,7 @@ import Transition from './components/Transition';
 import Button from './components/Button';
 import PeerVideo from './components/PeerVideo';
 import './App.css';
+import Title from './components/Title';
 
 function App() {
   const [socket, setSocket] = useState(null);
@@ -293,20 +294,41 @@ function App() {
   // console.log('peersOnConference: ', peersOnConference);
 
   return (
-    <div className="container max-w-[900px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
+    <div className="container bg-[#2E4F4F] max-w-[700px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
       <Transition transited={transited} isConference={false}>
-        <div className="p-4 text-center text-lg">
-          Your id : <span className="font-bold">{socket?.id}</span>
-        </div>
+        <Title id={socket?.id} />
         <Section {...usersProps} />
         <Section {...roomsProps} />
       </Transition>
 
       <Transition transited={transited} isConference>
-        <div className="p-4 text-center text-lg">
-          Conference id : <span className="font-bold">{conferenceId}</span>
+        <Title id={conferenceId} />
+        <div className="mt-2 flex justify-center rounded-sm hover:cursor-pointer">
+          <Button
+            onClick={() => setTransited(false)}
+            icon={<IoMdArrowRoundBack />}
+            disabled={false}
+            circle={true}
+          />
+          <Button
+            className="ml-auto"
+            onClick={async () =>
+              groupCall
+                ? await startGroupCall(conferenceId)
+                : await startPrivateCall(conferenceId)
+            }
+            icon={<MdAddCall />}
+            disabled={false}
+            circle
+          />
+          <Button
+            className="ml-2"
+            onClick={groupCall ? endGroupCall : endPrivateCall}
+            icon={<MdCallEnd />}
+            disabled={false}
+            circle
+          />
         </div>
-        <div className="p-4 text-center text-lg"></div>
         {!groupCall ? (
           <>
             <div className="w-full h-40 mb-2">
@@ -327,49 +349,17 @@ function App() {
             ))}
           </div>
         )}
-        <div className="flex items-center border border-slate-800 rounded">
+        <div className="flex items-center h-[40px] border border-[#0E8388] rounded">
           <input
-            className="block h-full w-full"
+            className="pl-4 block h-full w-full"
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
           <Button
-            action={'Send'}
             onClick={() => sendMessage(message, conferenceId)}
             icon={<BsFillSendFill />}
             disabled={!message}
-          />
-        </div>
-        <div className="mt-2 flex justify-center bg-slate-700 rounded-sm hover:cursor-pointer">
-          <Button
-            className="mr-1"
-            action={'Start call'}
-            onClick={async () =>
-              groupCall
-                ? await startGroupCall(conferenceId)
-                : await startPrivateCall(conferenceId)
-            }
-            icon={<MdAddCall />}
-            disabled={false}
-            full
-          />
-          <Button
-            className="ml-1"
-            action={'End call'}
-            onClick={groupCall ? endGroupCall : endPrivateCall}
-            icon={<MdCallEnd />}
-            disabled={false}
-            full
-          />
-        </div>
-        <div className="mt-2 flex justify-center bg-slate-700 rounded-sm hover:cursor-pointer">
-          <Button
-            action={'Go back'}
-            onClick={() => setTransited(false)}
-            icon={<IoMdArrowRoundBack />}
-            disabled={false}
-            full
           />
         </div>
       </Transition>

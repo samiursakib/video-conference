@@ -3,6 +3,7 @@ import React from 'react';
 export default function Transition({ children, transited, isConference }) {
   return (
     <div
+      className="p-8 pt-0"
       style={{
         position: 'absolute',
         left: isConference
@@ -13,6 +14,7 @@ export default function Transition({ children, transited, isConference }) {
           ? '-150%'
           : '0%',
         width: '100%',
+        height: '100vh',
         transition: 'all 0.5s ease',
       }}
     >

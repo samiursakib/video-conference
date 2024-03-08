@@ -28,33 +28,39 @@ export default function Section({
     }
   };
   return (
-    <div className="p-8">
-      <div className="pb-2 border-b border-b-slate-800 text-md flex justify-between items-center">
-        <div className="font-semibold text-lg">{title}</div>
-        {forRooms && (
-          <div className="flex items-center border border-slate-800 rounded">
-            <input
-              className="block h-full"
-              type="text"
-              value={room}
-              onChange={(e) => setRoom(e.target.value)}
-            />
-            <Button
-              action={'Create'}
-              onClick={() => {
-                joinRoom(room);
-                setRoom('');
-              }}
-              icon={<MdLibraryAdd />}
-              disabled={!room}
-            />
-          </div>
-        )}
+    <>
+      <div className="pb-3 border-b border-b-[#0E8388]">
+        <div
+          className={`text-md flex justify-between items-center ${
+            forRooms ? 'mt-8' : ''
+          }`}
+        >
+          <div className="font-semibold text-lg">{title}</div>
+          {forRooms && (
+            <div className="flex items-center border border-[#0E8388] rounded">
+              <input
+                className="pl-3 block h-full"
+                type="text"
+                value={room}
+                onChange={(e) => setRoom(e.target.value)}
+              />
+              <Button
+                action={'Create'}
+                onClick={() => {
+                  joinRoom(room);
+                  setRoom('');
+                }}
+                icon={<MdLibraryAdd />}
+                disabled={!room}
+              />
+            </div>
+          )}
+        </div>
       </div>
       {list?.length ? (
         <ul>
           {list.map((item, index) => (
-            <li className="mt-2 flex justify-between items-center" key={index}>
+            <li className="mt-4 flex justify-between items-center" key={index}>
               <span>{item}</span>
               {forRooms ? (
                 <span>
@@ -96,6 +102,6 @@ export default function Section({
       ) : (
         <span className="mt-2 block">No {title.toLowerCase()} available</span>
       )}
-    </div>
+    </>
   );
 }
