@@ -31,7 +31,9 @@ export default function Section({
     <>
       <div className="border-b border-b-[#0E8388]">
         <div
-          className={`mb-3 text-md flex flex-col sm:flex-row justify-between gap-2`}
+          className={`mb-3 text-md flex flex-col sm:flex-row justify-between gap-2 ${
+            forRooms ? 'mt-8' : ''
+          }`}
         >
           <div className="font-semibold text-lg">{title}</div>
           {forRooms && (
