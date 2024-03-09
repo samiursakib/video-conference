@@ -35,6 +35,8 @@ function App() {
 
   useEffect(() => {
     const newSocket = io('https://vc-server-fchv.onrender.com');
+    newSocket.username = 'something';
+    newSocket.avatarUrl = '../../public/images/avatar1.png';
     setSocket(newSocket);
     newSocket.on('connect', () => {
       const newPeer = new Peer(newSocket.id, {
@@ -296,6 +298,8 @@ function App() {
   return (
     <div className="container bg-[#2E4F4F] max-w-[700px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
       <Transition transited={transited} isConference={false}>
+        <img src={socket?.avatarUrl} alt="avatar1" />
+        <div>{socket?.username}</div>
         <Title id={socket?.id} />
         <Section {...usersProps} />
         <Section {...roomsProps} />
