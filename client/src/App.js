@@ -39,7 +39,7 @@ function App() {
   useEffect(() => {
     const newSocket = io('https://vc-server-fchv.onrender.com');
     newSocket.username = socketUsername;
-    newSocket.avatarUrl = `/images/avatar${
+    newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1
     }.png`;
     newSocket.on('connect', () => {
@@ -317,108 +317,111 @@ function App() {
   // console.log('peersOnConference: ', peersOnConference);
 
   return (
-    <div className="container bg-[#2E4F4F] max-w-[700px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
-      <Transition transited={transited} isConference={false}>
-        <Profile
-          avatarUrl={socket?.avatarUrl}
-          username={socket?.username}
-          socketUsername={socketUsername}
-          setSocketUsername={setSocketUsername}
-          setRunSetUsername={setRunSetUsername}
-        />
-        <Section {...usersProps} />
-        <Section {...roomsProps} />
-      </Transition>
+    <>
+      {/* <div className="left-[400px] top-[200px] absolute h-[400px] w-[400px] bg-slate-500 rounded-full -z-10"></div> */}
+      <div className="container bg-[#2E4F4F]/30 backdrop-blur-[5px] max-w-[700px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
+        <Transition transited={transited} isConference={false}>
+          <Profile
+            avatarUrl={socket?.avatarUrl}
+            username={socket?.username}
+            socketUsername={socketUsername}
+            setSocketUsername={setSocketUsername}
+            setRunSetUsername={setRunSetUsername}
+          />
+          <Section {...usersProps} />
+          <Section {...roomsProps} />
+        </Transition>
 
-      <Transition transited={transited} isConference>
-        <Title id={conferenceId} />
-        <div className="mt-2 flex justify-center rounded-sm hover:cursor-pointer">
-          <Button
-            onClick={() => setTransited(false)}
-            icon={<IoMdArrowRoundBack />}
-            disabled={false}
-            circle={true}
-          />
-          <Button
-            className="ml-auto"
-            onClick={async () =>
-              groupCall
-                ? await startGroupCall(conferenceId)
-                : await startPrivateCall(conferenceId)
-            }
-            icon={<MdAddCall />}
-            disabled={false}
-            circle
-          />
-          <Button
-            className="ml-2"
-            onClick={groupCall ? endGroupCall : endPrivateCall}
-            icon={<MdCallEnd />}
-            disabled={false}
-            circle
-          />
-        </div>
-        {!groupCall ? (
-          <>
-            <div className="w-full h-40 mb-2">
-              <video className="w-full h-full" ref={selfVideoRef}></video>
-            </div>
-            <div className="w-full h-40 mb-2">
-              <video className="w-full h-full" ref={remoteVideoRef}></video>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-wrap gap-5">
-            {Object.keys(peersOnConference).map((key) => (
-              <PeerVideo
-                key={key}
-                peerId={key}
-                stream={peersOnConference[key]}
-              />
-            ))}
+        <Transition transited={transited} isConference>
+          <Title id={conferenceId} />
+          <div className="mt-2 flex justify-center rounded-sm hover:cursor-pointer">
+            <Button
+              onClick={() => setTransited(false)}
+              icon={<IoMdArrowRoundBack />}
+              disabled={false}
+              circle={true}
+            />
+            <Button
+              className="ml-auto"
+              onClick={async () =>
+                groupCall
+                  ? await startGroupCall(conferenceId)
+                  : await startPrivateCall(conferenceId)
+              }
+              icon={<MdAddCall />}
+              disabled={false}
+              circle
+            />
+            <Button
+              className="ml-2"
+              onClick={groupCall ? endGroupCall : endPrivateCall}
+              icon={<MdCallEnd />}
+              disabled={false}
+              circle
+            />
           </div>
-        )}
-        <div className="overflow-auto">
-          {/* <ul>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-          </ul> */}
-        </div>
-        <div className="flex items-center h-[40px] border border-[#0E8388] rounded">
-          <input
-            className="pl-4 block h-full w-full"
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <Button
-            onClick={() => sendMessage(message, conferenceId)}
-            icon={<BsFillSendFill />}
-            disabled={!message}
-          />
-        </div>
-      </Transition>
-    </div>
+          {!groupCall ? (
+            <>
+              <div className="w-full h-40 mb-2">
+                <video className="w-full h-full" ref={selfVideoRef}></video>
+              </div>
+              <div className="w-full h-40 mb-2">
+                <video className="w-full h-full" ref={remoteVideoRef}></video>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-wrap gap-5">
+              {Object.keys(peersOnConference).map((key) => (
+                <PeerVideo
+                  key={key}
+                  peerId={key}
+                  stream={peersOnConference[key]}
+                />
+              ))}
+            </div>
+          )}
+          <div className="overflow-auto">
+            {/* <ul>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+              <li>1</li>
+            </ul> */}
+          </div>
+          <div className="flex items-center h-[40px] border border-[#0E8388] rounded">
+            <input
+              className="pl-4 block h-full w-full"
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <Button
+              onClick={() => sendMessage(message, conferenceId)}
+              icon={<BsFillSendFill />}
+              disabled={!message}
+            />
+          </div>
+        </Transition>
+      </div>
+    </>
   );
 }
 
