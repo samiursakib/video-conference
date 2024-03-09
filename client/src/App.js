@@ -4,6 +4,7 @@ import { Peer } from 'peerjs';
 import { BsFillSendFill } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { MdAddCall, MdCallEnd } from 'react-icons/md';
+import { RiEditBoxFill } from 'react-icons/ri';
 import { getMedia, setVideoRef } from './utils';
 import Section from './components/Section';
 import Transition from './components/Transition';
@@ -30,13 +31,16 @@ function App() {
   const [peersOnConference, setPeersOnConference] = useState({});
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [groupCall, setGroupCall] = useState(false);
+  const [socketUsername, setSocketUsername] = useState('something');
   const selfVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
   useEffect(() => {
     const newSocket = io('https://vc-server-fchv.onrender.com');
-    newSocket.username = 'something';
-    newSocket.avatarUrl = '../../public/images/avatar1.png';
+    newSocket.username = socketUsername;
+    newSocket.avatarUrl = `../public/images/avatar${
+      Math.floor(Math.random() * 5) + 1
+    }.png`;
     setSocket(newSocket);
     newSocket.on('connect', () => {
       const newPeer = new Peer(newSocket.id, {
@@ -298,9 +302,24 @@ function App() {
   return (
     <div className="container bg-[#2E4F4F] max-w-[700px] h-screen mx-auto font-light relative overflow-hidden scroll-smooth">
       <Transition transited={transited} isConference={false}>
-        <img src={socket?.avatarUrl} alt="avatar1" />
+        <img src={'../public/images/avatar1.url'} alt="avatar1" />
         <div>{socket?.username}</div>
         <Title id={socket?.id} />
+        <div className="flex items-center border border-[#0E8388] rounded">
+          <input
+            className="pl-3 block h-full"
+            type="text"
+            value={socketUsername}
+            onChange={(e) => setRoom(e.target.value)}
+          />
+          <Button
+            className="ml-auto"
+            action={'Set'}
+            onClick={() => setSocketUsername(socketUsername)}
+            icon={<RiEditBoxFill />}
+            disabled={!room}
+          />
+        </div>
         <Section {...usersProps} />
         <Section {...roomsProps} />
       </Transition>
