@@ -3,7 +3,7 @@ import React from 'react';
 export default function Transition({ children, transited, isConference }) {
   return (
     <div
-      className="p-8 pt-0"
+      className="p-8 pt-0 flex flex-col gap-4"
       style={{
         position: 'absolute',
         left: isConference

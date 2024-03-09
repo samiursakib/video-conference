@@ -29,11 +29,9 @@ export default function Section({
   };
   return (
     <>
-      <div className="pb-3 border-b border-b-[#0E8388]">
+      <div className="border-b border-b-[#0E8388]">
         <div
-          className={`text-md flex justify-between items-center ${
-            forRooms ? 'mt-8' : ''
-          }`}
+          className={`mb-3 text-md flex flex-col sm:flex-row justify-between gap-2`}
         >
           <div className="font-semibold text-lg">{title}</div>
           {forRooms && (
@@ -45,6 +43,7 @@ export default function Section({
                 onChange={(e) => setRoom(e.target.value)}
               />
               <Button
+                className="ml-auto"
                 action={'Create'}
                 onClick={() => {
                   joinRoom(room);
@@ -58,9 +57,9 @@ export default function Section({
         </div>
       </div>
       {list?.length ? (
-        <ul>
+        <ul className="flex flex-col gap-3">
           {list.map((item, index) => (
-            <li className="mt-4 flex justify-between items-center" key={index}>
+            <li className="flex justify-between items-center" key={index}>
               <span>{item}</span>
               {forRooms ? (
                 <span>

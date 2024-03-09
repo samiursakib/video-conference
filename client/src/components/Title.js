@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Title({ id }) {
   return (
-    <div className="p-4 pb-8 text-center text-lg">
+    <div className="mt-4 text-center text-lg">
       {id ? (
         <>
           Your id : <span className="font-bold">{id}</span>
