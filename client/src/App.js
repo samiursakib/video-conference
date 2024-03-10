@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 
 import { BsFillSendFill } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { MdAddCall, MdCallEnd } from 'react-icons/md';
 
-import { getMedia, setVideoRef } from './utils/mediaHelper';
 import {
   useCallOthers,
   useSetUsername,
