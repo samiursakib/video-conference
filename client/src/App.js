@@ -37,7 +37,7 @@ function App() {
   const remoteVideoRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:80');
+    const newSocket = io('https://video-conference-server-ncpz.onrender.com');
     newSocket.username = socketUsername;
     newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1

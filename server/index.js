@@ -1,7 +1,8 @@
 const http = require('http');
-const { Server } = require('socket.io');
 const express = require('express');
 const serverless = require('serverless-http');
+const { Server } = require('socket.io');
+
 const { fetchData, fetchPeersOnConference } = require('./utils.js');
 
 const port = process.env.PORT || 80;
