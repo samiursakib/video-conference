@@ -19,4 +19,4 @@ const fetchPeersOnConference = (io, room) => {
   return [];
 };
 
-module.exports = { fetchData, fetchPeersOnConference };
+module.exports = { fetchData, fetchPeersOnConference };

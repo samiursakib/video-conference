@@ -8,7 +8,7 @@ export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
   const [peer, setPeer] = useState(null);
   useEffect(() => {
-    const newSocket = io('https://vc-server-fchv.onrender.com');
+    const newSocket = io('http://localhost:80');
     newSocket.username = socketUsername;
     newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1
