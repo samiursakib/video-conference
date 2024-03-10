@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
 
   // ask a ques on github for cleaner way
   // socket.onAny((event) => {
-  //   console.log(`${event} fired`);
+  //   console.log(${event} fired);
   //   const data = fetchData(io);
   //   console.log(data);
   //   io.emit('receiveData', data);
