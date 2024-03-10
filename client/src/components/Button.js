@@ -8,6 +8,7 @@ export default function Button({
   disabled,
   full,
   circle,
+  color
 }) {
   return (
     <button
@@ -15,7 +16,9 @@ export default function Button({
         full ? 'w-full h-full' : ''
       } disabled:bg-[#0E8388] ${
         circle ? 'rounded-full w-[40px] h-[40px]' : 'rounded-sm h-full'
-      } ${className ? className : ''}`}
+      } ${className ? className : ''} ${
+        color ? `bg-[#c92a2a]` : ''
+      }`}
       onClick={onClick}
       disabled={disabled}
     >

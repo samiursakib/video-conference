@@ -5,6 +5,7 @@ import { AiFillMessage } from 'react-icons/ai';
 import Button from './Button';
 
 export default function Section({
+  socket,
   setConferenceId,
   setTransited,
   message,
@@ -18,6 +19,7 @@ export default function Section({
   joinRoom,
   leaveRoom,
   joinedRooms,
+  setJoinedRooms,
   setGroupCall,
 }) {
   const enterConference = (conferenceId) => {
@@ -48,7 +50,7 @@ export default function Section({
                 className="ml-auto"
                 action={'Create'}
                 onClick={() => {
-                  joinRoom(room);
+                  joinRoom(socket, room, setJoinedRooms);
                   setRoom('');
                 }}
                 icon={<MdLibraryAdd />}
@@ -68,7 +70,7 @@ export default function Section({
                   {!joinedRooms?.some((r) => r === item) ? (
                     <Button
                       action={'Join'}
-                      onClick={() => joinRoom(item)}
+                      onClick={() => joinRoom(socket, item, setJoinedRooms)}
                       icon={<MdJoinFull />}
                     />
                   ) : (
@@ -80,7 +82,7 @@ export default function Section({
                       />
                       <Button
                         action={'Leave'}
-                        onClick={() => leaveRoom(item)}
+                        onClick={() => leaveRoom(socket, item, setJoinedRooms)}
                         icon={<IoLogOut />}
                       />
                     </div>
