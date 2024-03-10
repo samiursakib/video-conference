@@ -1,43 +1,21 @@
 const http = require('http');
-const express = require('express');
-const cors = require('cors');
 const { Server } = require('socket.io');
-const { PeerServer } = require('peer');
+const express = require('express');
 const serverless = require('serverless-http');
-const { fetchData, fetchPeersOnConference } = require('./utils');
+const { fetchData, fetchPeersOnConference } = require('./utils.js');
 
 const port = process.env.PORT || 80;
 
 const app = express();
-
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: [
+      'https://video-conference-client.vercel.app',
+      'http://localhost:3000',
+    ],
     methods: ['GET', 'POST'],
   },
-});
-const peerServer = new PeerServer({
-  port: 9000,
-  path: '/',
-});
-
-// app.use(
-//   cors({
-//     origin: 'https://video-conference-client.vercel.app',
-//     credentials: true,
-//   })
-// );
-
-app.options('/', function (req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.end();
-});
-
-app.get('/', (req, res) => {
-  res.send({ title: 'user connected' });
 });
 
 io.on('connection', (socket) => {
@@ -98,6 +76,14 @@ io.on('connection', (socket) => {
   //   io.emit('receiveData', data);
   // });
 });
+
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.json({ message: 'hello' });
+});
+
+app.use('/', router);
 
 server.listen(port, () => {
   console.log(`Server running at port: ${port}`);
