@@ -11,7 +11,11 @@ export const setVideoRef = (videoRef, stream) => {
   let selfPlayPromise = videoRef.current.play();
   if (selfPlayPromise !== undefined) {
     selfPlayPromise
-      .then((_) => console.log('playing self stream'))
-      .catch((e) => console.log('error while playing self stream'));
+      .then((_) => {
+        // console.log('playing self stream');
+      })
+      .catch((e) => {
+        // console.log('error while playing self stream');
+      });
   }
 };

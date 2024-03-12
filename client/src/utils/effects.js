@@ -4,11 +4,14 @@ import { Peer } from 'peerjs';
 
 import { getMedia, setVideoRef } from './mediaHelper';
 
+const remoteHost = 'https://video-conference-server-ncpz.onrender.com';
+const localHost = 'http://localhost:80';
+
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
   const [peer, setPeer] = useState(null);
   useEffect(() => {
-    const newSocket = io('https://video-conference-server-ncpz.onrender.com');
+    const newSocket = io(localHost);
     newSocket.username = socketUsername;
     newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1
@@ -48,7 +51,9 @@ export const useSocketEventListener = (
   selfVideoRef,
   remoteVideoRef,
   setPeerCall,
-  setPeerCalls
+  setPeerCalls,
+  calls,
+  setCalls
 ) => {
   useEffect(() => {
     socket?.on('receiveMessage', (msg, from) => {
@@ -67,9 +72,32 @@ export const useSocketEventListener = (
       setAvailableUsers(data.users);
       setAvailableRooms(data.rooms);
     });
-    socket?.on('receiveStream', (s) =>
-      setPeersOnConference((prev) => ({ ...prev, ...s }))
-    );
+    socket?.on('peerEndCall', (peerId) => {
+      console.log(
+        'call ended by (client) ',
+        peerId,
+        ' #call is : ',
+        calls[peerId]
+      );
+      calls[peerId]?.close();
+      setCalls((prev) =>
+        Object.keys(prev)
+          .filter((key) => key !== peerId)
+          .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
+      );
+      // for (const c in calls) {
+      //   console.log(c.peer, peerId);
+      //   if (c.peer === peerId) {
+      //     console.log('matched');
+      //     c.close();
+      setPeersOnConference((prev) =>
+        Object.keys(prev)
+          .filter((key) => key !== peerId)
+          .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
+      );
+      //   }
+      // }
+    });
     socket?.on('receiveCallOthersTriggered', (peerIds, room) => {
       // alert('call triggered');
       setConferenceId(room);
@@ -99,6 +127,7 @@ export const useSocketEventListener = (
     socket?.emit('fetchData');
     peer?.on('call', async (call) => {
       try {
+        console.log(peer.id + ' -> ' + call.peer);
         setTransited(true);
         setIsAnswered(true);
         const selfStream = await getMedia();

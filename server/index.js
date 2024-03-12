@@ -54,9 +54,9 @@ io.on('connection', (socket) => {
     io.to(room).emit('receiveCallOthersTriggered', peersOnConference, room);
   });
 
-  socket.on('leaveCall', (room, socketId) => {
-    console.log(socketId);
-    socket.broadcast.to(room).emit('leaveCallAlert', socket.id, room);
+  socket.on('endCall', (peerId, room) => {
+    console.log('ended call by ', peerId, ' from ', room);
+    socket.broadcast.to(room).emit('peerEndCall', peerId);
   });
 
   socket.on('forceDisconnect', () => {

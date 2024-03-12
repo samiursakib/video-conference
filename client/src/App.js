@@ -67,7 +67,9 @@ function App() {
     selfVideoRef,
     remoteVideoRef,
     setPeerCall,
-    setPeerCalls
+    setPeerCalls,
+    calls,
+    setCalls
   );
   useCallOthers(
     peer,
@@ -110,6 +112,7 @@ function App() {
   };
 
   // console.log('peersOnConference: ', peersOnConference);
+  console.log('calls: ', calls);
 
   return (
     <div className="">
@@ -161,8 +164,10 @@ function App() {
                 groupCall
                   ? () =>
                       endGroupCall(
+                        socket,
                         calls,
-                        peerCalls,
+                        setCalls,
+                        conferenceId,
                         setCallOthersTriggered,
                         setPeersOnConference
                       )

@@ -89,19 +89,23 @@ export const startGroupCall = async (socket, conferenceId) => {
 };
 
 export const endGroupCall = (
+  socket,
   calls,
-  peerCalls,
+  setCalls,
+  conferenceId,
   setCallOthersTriggered,
   setPeersOnConference
 ) => {
+  socket.emit('endCall', socket.id, conferenceId);
   console.log('ending group call from self');
   for (let key in calls) {
     calls[key]?.close();
   }
-  for (let key in peerCalls) {
-    peerCalls[key]?.close();
-  }
+  // for (let key in peerCalls) {
+  //   peerCalls[key]?.close();
+  // }
   setCallOthersTriggered(false);
+  setCalls({});
   setPeersOnConference({});
   // socket.emit('leaveCall', conferenceId, socket.id);
 };
