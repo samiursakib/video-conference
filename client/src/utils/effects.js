@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 
-import { getMedia, setVideoRef } from './mediaHelper';
+import { getMedia } from './mediaHelper';
 
 const remoteHost = 'https://video-conference-server-ncpz.onrender.com';
-const localHost = 'http://localhost:80';
+// const localHost = 'http://localhost:80';
 
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
   const [peer, setPeer] = useState(null);
   useEffect(() => {
-    const newSocket = io(localHost);
+    const newSocket = io(remoteHost);
     newSocket.username = socketUsername;
     newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1
@@ -31,7 +31,6 @@ export const useSetUsername = (socket, socketUsername) => {
   useEffect(() => {
     if (runSetUsername) {
       socket.username = socketUsername;
-      // setSocketUsername('');
       setRunSetUsername(false);
     }
   }, [runSetUsername, socket, socketUsername]);
@@ -48,8 +47,6 @@ export const useSocketEventListener = (
   setCallOthersTriggered,
   setTransited,
   setIsAnswered,
-  selfVideoRef,
-  remoteVideoRef,
   setPeerCall,
   setPeerCalls,
   calls,
@@ -60,7 +57,7 @@ export const useSocketEventListener = (
       alert(`${msg} from ${from}`);
     });
     socket?.on('joinRoomAlert', (socketId, room) => {
-      // alert(`${socketId} joined the room ${room}`);
+      //
     });
     socket?.on('leaveRoomAlert', (socketId, room) => {
       alert(`${socketId} left the room ${room}`);
@@ -73,33 +70,19 @@ export const useSocketEventListener = (
       setAvailableRooms(data.rooms);
     });
     socket?.on('peerEndCall', (peerId) => {
-      console.log(
-        'call ended by (client) ',
-        peerId,
-        ' #call is : ',
-        calls[peerId]
-      );
       calls[peerId]?.close();
       setCalls((prev) =>
         Object.keys(prev)
           .filter((key) => key !== peerId)
           .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
       );
-      // for (const c in calls) {
-      //   console.log(c.peer, peerId);
-      //   if (c.peer === peerId) {
-      //     console.log('matched');
-      //     c.close();
       setPeersOnConference((prev) =>
         Object.keys(prev)
           .filter((key) => key !== peerId)
           .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
       );
-      //   }
-      // }
     });
     socket?.on('receiveCallOthersTriggered', (peerIds, room) => {
-      // alert('call triggered');
       setConferenceId(room);
       setCallOthersTriggered(true);
       setPeersOnConference((prev) =>
@@ -107,22 +90,7 @@ export const useSocketEventListener = (
       );
     });
     socket?.on('leaveCallAlert', (leftPeerId) => {
-      // const restPeers = { ...peersOnConference };
-      // console.log('peer left : ', leftPeerId);
-      // console.log(peersOnConference[leftPeerId]);
-      // console.log(peersOnConference);
-      // console.log(Object.keys(restPeers));
-      // delete restPeers[leftPeerId];
-      // console.log(Object.keys(restPeers));
-      // setPeersOnConference((prev) =>
-      //   Object.keys(peersOnConference).reduce(
-      //     (obj, key) =>
-      //       key === leftPeerId
-      //         ? { ...obj, [key]: 'absent' }
-      //         : { ...obj, [key]: 'present' },
-      //     {}
-      //   )
-      // );
+      //
     });
     socket?.emit('fetchData');
     peer?.on('call', async (call) => {
@@ -132,33 +100,16 @@ export const useSocketEventListener = (
         setIsAnswered(true);
         const selfStream = await getMedia();
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
-        // if (!groupCall) {
-        // setConferenceId(call.peer); //uncomment for private call
-        // setVideoRef(selfVideoRef, selfStream); //uncomment for private call
-        // }
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
           setPeersOnConference((prev) => ({
             ...prev,
             [call.peer]: remoteStream,
           }));
-          // if (!groupCall) {
-          // setVideoRef(remoteVideoRef, remoteStream); //uncomment for private call
-          // }
         });
         call.on('close', () => {
-          // if (callOthersTriggered) {
-          // let restPeers = peersOnConference;
-          // delete restPeers[call.peer];
-          // setCalls({});
-          // setPeerCalls({});
-          // setPeersOnConference({});
           setIsAnswered(false);
           selfStream.getTracks().forEach((track) => track.stop());
-          // if (!groupCall) {
-          // selfVideoRef.current.srcObject = null; //uncomment for private call
-          // remoteVideoRef.current.srcObject = null; //uncomment for private call
-          // }
         });
         call.on('error', (e) => console.log('error in peer call'));
         setPeerCall(call);
@@ -198,8 +149,6 @@ export const useCallOthers = (
           call?.on('close', () => {
             console.log('triggered in callOthers useEffect');
             setIsAnswered(false);
-            // setPeersOnConference({});
-            // setCalls({});
             selfStream.getTracks().forEach((track) => track.stop());
           });
           call?.on('error', (e) => console.log('error while on group call', e));
@@ -207,7 +156,6 @@ export const useCallOthers = (
         }
       }
     };
-    // console.log('this useEffect is continuously running');
     callOthers();
   }, [callOthersTriggered, peer]);
 };

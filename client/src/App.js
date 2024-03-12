@@ -10,6 +10,7 @@ import {
   useSocketEventListener,
   useSocketInitialization,
 } from './utils/effects';
+
 import {
   sendMessage,
   joinRoom,
@@ -19,6 +20,7 @@ import {
   startGroupCall,
   endGroupCall,
 } from './utils/actions';
+
 import Section from './components/Section';
 import Transition from './components/Transition';
 import Button from './components/Button';
@@ -64,8 +66,6 @@ function App() {
     setCallOthersTriggered,
     setTransited,
     setIsAnswered,
-    selfVideoRef,
-    remoteVideoRef,
     setPeerCall,
     setPeerCalls,
     calls,
@@ -110,9 +110,6 @@ function App() {
     joinedRooms,
     setGroupCall,
   };
-
-  // console.log('peersOnConference: ', peersOnConference);
-  console.log('calls: ', calls);
 
   return (
     <div className="">
@@ -201,25 +198,6 @@ function App() {
           )}
           <div className="overflow-auto">
             {/* <ul>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
               <li>1</li>
               <li>1</li>
               <li>1</li>
