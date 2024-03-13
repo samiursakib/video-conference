@@ -33,8 +33,8 @@ import './App.css';
 function App() {
   const [call, setCall] = useState(null);
   const [calls, setCalls] = useState({});
-  const [peerCall, setPeerCall] = useState(null);
-  const [peerCalls, setPeerCalls] = useState({});
+  // const [peerCall, setPeerCall] = useState(null);
+  // const [peerCalls, setPeerCalls] = useState({});
   const [message, setMessage] = useState('');
   const [room, setRoom] = useState('');
   const [availableUsers, setAvailableUsers] = useState([]);
@@ -47,8 +47,6 @@ function App() {
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [groupCall, setGroupCall] = useState(false);
   const [socketUsername, setSocketUsername] = useState('username');
-  const selfVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
 
   const { socket, setSocket, peer, setPeer } =
     useSocketInitialization(socketUsername);
@@ -66,8 +64,8 @@ function App() {
     setCallOthersTriggered,
     setTransited,
     setIsAnswered,
-    setPeerCall,
-    setPeerCalls,
+    // setPeerCall,
+    // setPeerCalls,
     calls,
     setCalls
   );
@@ -139,36 +137,22 @@ function App() {
             />
             <Button
               className="ml-auto"
-              onClick={async () =>
-                groupCall
-                  ? await startGroupCall(socket, conferenceId)
-                  : await startPrivateCall(
-                      peer,
-                      conferenceId,
-                      selfVideoRef,
-                      setIsAnswered,
-                      remoteVideoRef,
-                      setCall
-                    )
-              }
+              onClick={async () => await startGroupCall(socket, conferenceId)}
               icon={<MdAddCall />}
               disabled={false}
               circle
             />
             <Button
               className="ml-2"
-              onClick={
-                groupCall
-                  ? () =>
-                      endGroupCall(
-                        socket,
-                        calls,
-                        setCalls,
-                        conferenceId,
-                        setCallOthersTriggered,
-                        setPeersOnConference
-                      )
-                  : () => endPrivateCall(call, peerCall)
+              onClick={() =>
+                endGroupCall(
+                  socket,
+                  calls,
+                  setCalls,
+                  conferenceId,
+                  setCallOthersTriggered,
+                  setPeersOnConference
+                )
               }
               icon={<MdCallEnd />}
               disabled={false}
@@ -176,26 +160,15 @@ function App() {
               color={'#F54545'}
             />
           </div>
-          {!groupCall ? (
-            <>
-              <div className="w-full h-40 mb-2">
-                <video className="w-full h-full" ref={selfVideoRef}></video>
-              </div>
-              <div className="w-full h-40 mb-2">
-                <video className="w-full h-full" ref={remoteVideoRef}></video>
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-wrap gap-5">
-              {Object.keys(peersOnConference).map((key) => (
-                <PeerVideo
-                  key={key}
-                  peerId={key}
-                  stream={peersOnConference[key]}
-                />
-              ))}
-            </div>
-          )}
+          <div className="flex flex-wrap gap-5">
+            {Object.keys(peersOnConference).map((key) => (
+              <PeerVideo
+                key={key}
+                peerId={key}
+                stream={peersOnConference[key]}
+              />
+            ))}
+          </div>
           <div className="overflow-auto">
             {/* <ul>
               <li>1</li>

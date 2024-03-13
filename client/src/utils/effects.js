@@ -4,14 +4,14 @@ import { Peer } from 'peerjs';
 
 import { getMedia } from './mediaHelper';
 
-const remoteHost = 'https://video-conference-server-ncpz.onrender.com';
-// const localHost = 'http://localhost:80';
+// const remoteHost = 'https://video-conference-server-ncpz.onrender.com';
+const localHost = 'http://localhost:80';
 
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
   const [peer, setPeer] = useState(null);
   useEffect(() => {
-    const newSocket = io(remoteHost);
+    const newSocket = io(localHost);
     newSocket.username = socketUsername;
     newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1
@@ -47,8 +47,8 @@ export const useSocketEventListener = (
   setCallOthersTriggered,
   setTransited,
   setIsAnswered,
-  setPeerCall,
-  setPeerCalls,
+  // setPeerCall,
+  // setPeerCalls,
   calls,
   setCalls
 ) => {
@@ -76,11 +76,12 @@ export const useSocketEventListener = (
           .filter((key) => key !== peerId)
           .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
       );
-      setPeersOnConference((prev) =>
-        Object.keys(prev)
+      setPeersOnConference((prev) => {
+        if (Object.keys(prev).length === 1) return {};
+        return Object.keys(prev)
           .filter((key) => key !== peerId)
-          .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
-      );
+          .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {});
+      });
     });
     socket?.on('receiveCallOthersTriggered', (peerIds, room) => {
       setConferenceId(room);
@@ -112,8 +113,8 @@ export const useSocketEventListener = (
           selfStream.getTracks().forEach((track) => track.stop());
         });
         call.on('error', (e) => console.log('error in peer call'));
-        setPeerCall(call);
-        setPeerCalls((prev) => ({ ...prev, [call.peer]: call }));
+        // setPeerCall(call);
+        // setPeerCalls((prev) => ({ ...prev, [call.peer]: call }));
       } catch (e) {
         console.log('error while receiving call');
       }
