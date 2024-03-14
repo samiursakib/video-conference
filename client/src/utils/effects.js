@@ -4,14 +4,14 @@ import { Peer } from 'peerjs';
 
 import { getMedia } from './mediaHelper';
 
-// const remoteHost = 'https://video-conference-server-ncpz.onrender.com';
-const localHost = 'http://localhost:80';
+const host = 'https://video-conference-server-ncpz.onrender.com';
+// const host = 'http://localhost:80';
 
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
   const [peer, setPeer] = useState(null);
   useEffect(() => {
-    const newSocket = io(localHost);
+    const newSocket = io(host);
     newSocket.username = socketUsername;
     newSocket.avatarUrl = `images/avatar${
       Math.floor(Math.random() * 5) + 1
@@ -46,9 +46,6 @@ export const useSocketEventListener = (
   setConferenceId,
   setCallOthersTriggered,
   setTransited,
-  setIsAnswered,
-  // setPeerCall,
-  // setPeerCalls,
   calls,
   setCalls
 ) => {
@@ -77,7 +74,11 @@ export const useSocketEventListener = (
           .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {})
       );
       setPeersOnConference((prev) => {
-        if (Object.keys(prev).length === 1) return {};
+        if (Object.keys(prev).length === 1) {
+          setCallOthersTriggered(false);
+          setTransited(false);
+          return {};
+        }
         return Object.keys(prev)
           .filter((key) => key !== peerId)
           .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {});
@@ -96,9 +97,7 @@ export const useSocketEventListener = (
     socket?.emit('fetchData');
     peer?.on('call', async (call) => {
       try {
-        console.log(peer.id + ' -> ' + call.peer);
         setTransited(true);
-        setIsAnswered(true);
         const selfStream = await getMedia();
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
@@ -109,12 +108,9 @@ export const useSocketEventListener = (
           }));
         });
         call.on('close', () => {
-          setIsAnswered(false);
           selfStream.getTracks().forEach((track) => track.stop());
         });
         call.on('error', (e) => console.log('error in peer call'));
-        // setPeerCall(call);
-        // setPeerCalls((prev) => ({ ...prev, [call.peer]: call }));
       } catch (e) {
         console.log('error while receiving call');
       }
@@ -125,17 +121,15 @@ export const useSocketEventListener = (
 export const useCallOthers = (
   peer,
   callOthersTriggered,
-  setGroupCall,
-  setIsAnswered,
   peersOnConference,
   setPeersOnConference,
-  setCalls
+  setCalls,
+  setTransited
 ) => {
   useEffect(() => {
     const callOthers = async () => {
       if (callOthersTriggered) {
-        setGroupCall(true);
-        setIsAnswered(true);
+        setTransited(true);
         const selfStream = await getMedia();
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         for (const remotePeer in peersOnConference) {
@@ -148,8 +142,6 @@ export const useCallOthers = (
             }));
           });
           call?.on('close', () => {
-            console.log('triggered in callOthers useEffect');
-            setIsAnswered(false);
             selfStream.getTracks().forEach((track) => track.stop());
           });
           call?.on('error', (e) => console.log('error while on group call', e));

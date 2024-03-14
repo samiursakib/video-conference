@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
 import { BsFillSendFill } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
@@ -15,10 +15,8 @@ import {
   sendMessage,
   joinRoom,
   leaveRoom,
-  startPrivateCall,
-  endPrivateCall,
-  startGroupCall,
-  endGroupCall,
+  startCall,
+  endCall,
 } from './utils/actions';
 
 import Section from './components/Section';
@@ -31,10 +29,7 @@ import Profile from './components/Profile';
 import './App.css';
 
 function App() {
-  const [call, setCall] = useState(null);
   const [calls, setCalls] = useState({});
-  // const [peerCall, setPeerCall] = useState(null);
-  // const [peerCalls, setPeerCalls] = useState({});
   const [message, setMessage] = useState('');
   const [room, setRoom] = useState('');
   const [availableUsers, setAvailableUsers] = useState([]);
@@ -42,10 +37,8 @@ function App() {
   const [joinedRooms, setJoinedRooms] = useState([]);
   const [conferenceId, setConferenceId] = useState('');
   const [transited, setTransited] = useState(false);
-  const [isAnswered, setIsAnswered] = useState(false);
   const [peersOnConference, setPeersOnConference] = useState({});
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
-  const [groupCall, setGroupCall] = useState(false);
   const [socketUsername, setSocketUsername] = useState('username');
 
   const { socket, setSocket, peer, setPeer } =
@@ -63,20 +56,16 @@ function App() {
     setConferenceId,
     setCallOthersTriggered,
     setTransited,
-    setIsAnswered,
-    // setPeerCall,
-    // setPeerCalls,
     calls,
     setCalls
   );
   useCallOthers(
     peer,
     callOthersTriggered,
-    setGroupCall,
-    setIsAnswered,
     peersOnConference,
     setPeersOnConference,
-    setCalls
+    setCalls,
+    setTransited
   );
 
   const commonProps = {
@@ -106,14 +95,15 @@ function App() {
     setJoinedRooms,
     leaveRoom,
     joinedRooms,
-    setGroupCall,
   };
+
+  console.log(peersOnConference);
 
   return (
     <div className="">
       {/* <div className="left-[400px] top-[200px] absolute h-[400px] w-[400px] bg-slate-500 rounded-full -z-10"></div> */}
       <div className="mt-16 container bg-[#2E4F4F]/60 backdrop-blur-[7px] max-w-[700px] h-[800px] mx-auto font-light relative overflow-hidden scroll-smooth rounded-xl">
-        <Title id={socket?.id} conferenceId={conferenceId} />
+        <Title title={'your'} id={socket?.id} />
         <Transition transited={transited} isConference={false}>
           <Profile
             avatarUrl={socket?.avatarUrl}
@@ -127,7 +117,7 @@ function App() {
         </Transition>
 
         <Transition transited={transited} isConference>
-          <Title id={conferenceId} conferenceId={conferenceId} />
+          <Title title={'conference'} id={conferenceId} />
           <div className="mt-2 flex justify-center rounded-sm hover:cursor-pointer">
             <Button
               onClick={() => setTransited(false)}
@@ -137,7 +127,7 @@ function App() {
             />
             <Button
               className="ml-auto"
-              onClick={async () => await startGroupCall(socket, conferenceId)}
+              onClick={async () => await startCall(socket, conferenceId)}
               icon={<MdAddCall />}
               disabled={false}
               circle
@@ -145,7 +135,7 @@ function App() {
             <Button
               className="ml-2"
               onClick={() =>
-                endGroupCall(
+                endCall(
                   socket,
                   calls,
                   setCalls,
@@ -169,13 +159,13 @@ function App() {
               />
             ))}
           </div>
-          <div className="overflow-auto">
-            {/* <ul>
+          {/* <div className="overflow-auto">
+            <ul>
               <li>1</li>
               <li>1</li>
               <li>1</li>
-            </ul> */}
-          </div>
+            </ul>
+          </div> */}
           <div className="flex items-center h-[40px] border border-[#0E8388] rounded">
             <input
               className="pl-4 block h-full w-full"

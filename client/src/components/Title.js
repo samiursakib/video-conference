@@ -1,11 +1,12 @@
 import React from 'react';
 
-export default function Title({ id, conferenceId }) {
+export default function Title({ title, id }) {
   return (
     <div className="mt-4 text-center text-lg">
       {id ? (
         <>
-          {id === conferenceId ? 'Conference' : 'Your'} id : <span className="font-bold">{id}</span>
+          {title.charAt(0).toUpperCase() + title.slice(1)} id :{' '}
+          <span className="font-bold">{id}</span>
         </>
       ) : (
         <span>Initializing socket...</span>

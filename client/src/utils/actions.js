@@ -17,6 +17,31 @@ export const leaveRoom = (socket, room, setJoinedRooms) => {
   setJoinedRooms((prev) => prev.filter((r) => room !== r));
 };
 
+export const startCall = async (socket, conferenceId) => {
+  try {
+    socket.emit('callOthersTriggered', socket.id, conferenceId);
+  } catch (e) {
+    console.log('error while starting group call in catch block');
+  }
+};
+
+export const endCall = (
+  socket,
+  calls,
+  setCalls,
+  conferenceId,
+  setCallOthersTriggered,
+  setPeersOnConference
+) => {
+  socket.emit('endCall', socket.id, conferenceId);
+  for (let key in calls) {
+    calls[key]?.close();
+  }
+  setCallOthersTriggered(false);
+  setCalls({});
+  setPeersOnConference({});
+};
+
 export const disconnectSocket = (socket) => {
   socket.emit('forceDisconnect');
 };
@@ -57,55 +82,4 @@ export const endPrivateCall = (call, peerCall) => {
   call?.close();
   peerCall?.close();
   console.log('private call ended');
-};
-
-export const startGroupCall = async (socket, conferenceId) => {
-  try {
-    socket.emit('callOthersTriggered', conferenceId);
-    // setIsAnswered(true);
-    // socket.emit('fetchPeersOnConference', conferenceId);
-    // const selfStream = await getMedia();
-    // setPeersOnConference((prev) => ({
-    //   ...prev,
-    //   [socket.id]: selfStream,
-    // }));
-    // socket.emit('sendStream', conferenceId, { [socket.id]: selfStream });
-    // const array = Object.keys(peersOnConference);
-    // for (let i = 0; i < array.length - 1; i++) {
-    //   for (let j = i + 1; j < array.length; j++) {
-    //     const call = peer.call(array[i], selfStream);
-    //     call.on('stream', (remoteStream) => {
-    //       // setPeersOnConference((prev) => ({
-    //       //   ...prev,
-    //       //   [remotePeer]: remoteStream,
-    //       // }));
-    //     });
-    //     call.on('error', (e) => console.log('error starting group call'));
-    //   }
-    // }
-  } catch (e) {
-    console.log('error while starting group call in catch block');
-  }
-};
-
-export const endGroupCall = (
-  socket,
-  calls,
-  setCalls,
-  conferenceId,
-  setCallOthersTriggered,
-  setPeersOnConference
-) => {
-  socket.emit('endCall', socket.id, conferenceId);
-  console.log('ending group call from self');
-  for (let key in calls) {
-    calls[key]?.close();
-  }
-  // for (let key in peerCalls) {
-  //   peerCalls[key]?.close();
-  // }
-  setCallOthersTriggered(false);
-  setCalls({});
-  setPeersOnConference({});
-  // socket.emit('leaveCall', conferenceId, socket.id);
 };

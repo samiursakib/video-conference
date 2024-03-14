@@ -11,12 +11,16 @@ const fetchData = (io) => {
   };
 };
 
-const fetchPeersOnConference = (io, room) => {
+const fetchPeersOnConference = (io, socketId, conferenceId) => {
   const rooms = io.of('/').adapter.rooms;
+  let temp = [];
   for (const [id, value] of rooms.entries()) {
-    if (id === room) return Array.from(value);
+    if (id === conferenceId) {
+      temp = [...Array.from(value)];
+      break;
+    }
   }
-  return [];
+  return socketId in temp ? temp : [...temp, socketId];
 };
 
-module.exports = { fetchData, fetchPeersOnConference };
+module.exports = { fetchData, fetchPeersOnConference };

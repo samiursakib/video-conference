@@ -49,9 +49,18 @@ io.on('connection', (socket) => {
     socket.emit('receiveData', data);
   });
 
-  socket.on('callOthersTriggered', (room) => {
-    const peersOnConference = fetchPeersOnConference(io, room);
-    io.to(room).emit('receiveCallOthersTriggered', peersOnConference, room);
+  socket.on('callOthersTriggered', (socketId, conferenceId) => {
+    const peersOnConference = fetchPeersOnConference(
+      io,
+      socketId,
+      conferenceId
+    );
+    console.log(peersOnConference);
+    io.to(conferenceId).emit(
+      'receiveCallOthersTriggered',
+      peersOnConference,
+      conferenceId
+    );
   });
 
   socket.on('endCall', (peerId, room) => {
