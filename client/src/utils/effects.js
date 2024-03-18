@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 
-import { getMedia } from './mediaHelper';
+import { getMedia, isConferenceIdInRooms } from './helper';
 
 const host = 'https://video-conference-server-ncpz.onrender.com';
 // const host = 'http://localhost:80';
@@ -42,6 +42,7 @@ export const useSocketEventListener = (
   peer,
   setPeersOnConference,
   setAvailableUsers,
+  availableRooms,
   setAvailableRooms,
   setConferenceId,
   setCallOthersTriggered,
@@ -84,13 +85,17 @@ export const useSocketEventListener = (
           .reduce((obj, key) => ({ ...obj, [key]: prev[key] }), {});
       });
     });
-    socket?.on('receiveCallOthersTriggered', (peerIds, room) => {
-      setConferenceId(room);
-      setCallOthersTriggered(true);
-      setPeersOnConference((prev) =>
-        peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
-      );
-    });
+    socket?.on(
+      'receiveCallOthersTriggered',
+      (peerIds, conferenceId, caller) => {
+        console.log(availableRooms);
+        setConferenceId(socket.id === conferenceId ? caller : conferenceId);
+        setCallOthersTriggered(true);
+        setPeersOnConference((prev) =>
+          peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
+        );
+      }
+    );
     socket?.on('leaveCallAlert', (leftPeerId) => {
       //
     });

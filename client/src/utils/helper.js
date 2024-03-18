@@ -19,3 +19,7 @@ export const setVideoRef = (videoRef, stream) => {
       });
   }
 };
+
+export const isConferenceIdInRooms = (availableRooms, conferenceId) => {
+  return conferenceId in availableRooms;
+};

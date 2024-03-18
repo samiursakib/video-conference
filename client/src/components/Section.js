@@ -31,24 +31,24 @@ export default function Section({
   };
   return (
     <>
-      <div className="border-b border-b-[#0E8388]">
+      <div className="">
         <div
-          className={`mb-3 text-md flex flex-col sm:flex-row justify-between gap-2 ${
+          className={`mb-3 flex flex-col sm:flex-row justify-between items-center gap-2 ${
             forRooms ? 'mt-8' : ''
           }`}
         >
-          <div className="font-semibold text-lg">{title}</div>
+          <div className="font-semibold">{title}</div>
           {forRooms && (
-            <div className="flex items-center border border-[#0E8388] rounded">
+            <div className="flex items-center gap-2">
               <input
-                className="pl-3 block h-full"
+                // className="w-full"
                 type="text"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
               />
               <Button
-                className="ml-auto"
-                action={'Create'}
+                className=""
+                // action={'Create'}
                 onClick={() => {
                   joinRoom(socket, room, setJoinedRooms);
                   setRoom('');
@@ -61,27 +61,30 @@ export default function Section({
         </div>
       </div>
       {list?.length ? (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col">
           {list.map((item, index) => (
-            <li className="flex justify-between items-center" key={index}>
-              <span>{item}</span>
+            <li
+              className="flex justify-between items-center hover:bg-[#fff]/20 pl-3 pr-1 py-1 rounded-md transition-all duration"
+              key={index}
+            >
+              <span className="text-md">{item}</span>
               {forRooms ? (
                 <span>
                   {!joinedRooms?.some((r) => r === item) ? (
                     <Button
-                      action={'Join'}
+                      // action={'Join'}
                       onClick={() => joinRoom(socket, item, setJoinedRooms)}
                       icon={<MdJoinFull />}
                     />
                   ) : (
                     <div className="flex space-x-2">
                       <Button
-                        action={'Enter'}
+                        // action={'Enter'}
                         onClick={() => enterConference(item)}
                         icon={<IoEnter />}
                       />
                       <Button
-                        action={'Leave'}
+                        // action={'Leave'}
                         onClick={() => leaveRoom(socket, item, setJoinedRooms)}
                         icon={<IoLogOut />}
                       />
@@ -91,7 +94,7 @@ export default function Section({
               ) : (
                 <span>
                   <Button
-                    action={'Chat'}
+                    // action={'Chat'}
                     onClick={() => enterConference(item)}
                     icon={<AiFillMessage />}
                     disabled={false}

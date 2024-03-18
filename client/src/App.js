@@ -52,6 +52,7 @@ function App() {
     peer,
     setPeersOnConference,
     setAvailableUsers,
+    availableRooms,
     setAvailableRooms,
     setConferenceId,
     setCallOthersTriggered,
@@ -97,12 +98,12 @@ function App() {
     joinedRooms,
   };
 
-  console.log(peersOnConference);
+  // console.log(peersOnConference);
 
   return (
     <div className="">
       {/* <div className="left-[400px] top-[200px] absolute h-[400px] w-[400px] bg-slate-500 rounded-full -z-10"></div> */}
-      <div className="mt-16 container bg-[#2E4F4F]/60 backdrop-blur-[7px] max-w-[700px] h-[800px] mx-auto font-light relative overflow-hidden scroll-smooth rounded-xl">
+      <div className="pt-2 container bg-bermuda-light/50 backdrop-blur-[50px] text-bermuda-dark max-w-[700px] h-[600px] mx-auto overflow-x-hidden overflow-y-scroll font-light relative rounded-xl shadow-lg">
         <Title title={'your'} id={socket?.id} />
         <Transition transited={transited} isConference={false}>
           <Profile
@@ -150,25 +151,26 @@ function App() {
               color={'#F54545'}
             />
           </div>
-          <div className="flex flex-wrap gap-5">
+          <div className="flex flex-grow flex-wrap relative gap-5">
             {Object.keys(peersOnConference).map((key) => (
               <PeerVideo
                 key={key}
                 peerId={key}
                 stream={peersOnConference[key]}
+                layoutChangable={Object.keys(peersOnConference).length === 2}
+                self={key === socket.id}
               />
             ))}
           </div>
-          {/* <div className="overflow-auto">
+          {/* <div className="">
             <ul>
               <li>1</li>
               <li>1</li>
               <li>1</li>
             </ul>
           </div> */}
-          <div className="flex items-center h-[40px] border border-[#0E8388] rounded">
+          <div className="flex items-center gap-2">
             <input
-              className="pl-4 block h-full w-full"
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}

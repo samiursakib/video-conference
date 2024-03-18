@@ -59,7 +59,8 @@ io.on('connection', (socket) => {
     io.to(conferenceId).emit(
       'receiveCallOthersTriggered',
       peersOnConference,
-      conferenceId
+      conferenceId,
+      socketId
     );
   });
 

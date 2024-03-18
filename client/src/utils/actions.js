@@ -1,4 +1,4 @@
-import { getMedia, setVideoRef } from './mediaHelper';
+import { getMedia, setVideoRef } from './helper';
 
 export const sendMessage = (socket, msg, to, setMessage) => {
   socket.emit('sendMessage', msg, to);
