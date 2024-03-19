@@ -20,7 +20,8 @@ const fetchPeersOnConference = (io, socketId, conferenceId) => {
       break;
     }
   }
-  return socketId in temp ? temp : [...temp, socketId];
+  if (!temp.some((item) => item === socketId)) temp.push(socketId);
+  return temp;
 };
 
 module.exports = { fetchData, fetchPeersOnConference };

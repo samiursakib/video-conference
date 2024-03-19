@@ -98,7 +98,7 @@ function App() {
     joinedRooms,
   };
 
-  // console.log(peersOnConference);
+  console.log(peersOnConference);
 
   return (
     <div className="">

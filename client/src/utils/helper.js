@@ -1,6 +1,6 @@
 export const getMedia = async () => {
   const mediaStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
+    audio: false,
     video: true,
   });
   return mediaStream;

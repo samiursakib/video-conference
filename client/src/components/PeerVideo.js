@@ -6,7 +6,7 @@ const PeerVideo = ({ peerId, stream, layoutChangable, self }) => {
   useEffect(() => {
     setVideoRef(videoRef, stream);
   }, [stream]);
-  console.log('layoutChangable', layoutChangable);
+  // console.log('layoutChangable', layoutChangable);
   return (
     <div
       className={`flex items-stretch justify-center border ${
