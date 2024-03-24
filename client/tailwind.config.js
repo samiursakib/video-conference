@@ -4,13 +4,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        bermuda: {
-          light: '#eeeeee',
-          dark: '#333333',
-          disabled: '#555555',
-          hover: '#dddddd',
-          border: '#9ca3af',
-        },
+        white: '#eee',
+        sky: '#24a6af',
+        lightsky: '#eeeef2',
+        blue: '#17202e',
+        lightblue: '#f5f6fa',
+        gray: '#6b758e',
+        black: '#111',
       },
     },
   },

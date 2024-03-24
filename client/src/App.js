@@ -101,11 +101,11 @@ function App() {
   console.log(peersOnConference);
 
   return (
-    <div className="">
-      {/* <div className="left-[400px] top-[200px] absolute h-[400px] w-[400px] bg-slate-500 rounded-full -z-10"></div> */}
-      <div className="pt-2 container bg-bermuda-light/50 backdrop-blur-[50px] text-bermuda-dark max-w-[700px] h-[600px] mx-auto overflow-x-hidden overflow-y-scroll font-light relative rounded-xl shadow-lg">
-        <Title title={'your'} id={socket?.id} />
-        <Transition transited={transited} isConference={false}>
+    // <div className="">
+    <div className="w-full h-screen bg-blue text-white">
+      {!transited ? (
+        <div className="w-full flex flex-col">
+          <Title title={'your'} id={socket?.id} />
           <Profile
             avatarUrl={socket?.avatarUrl}
             username={socket?.username}
@@ -115,9 +115,10 @@ function App() {
           />
           <Section {...usersProps} />
           <Section {...roomsProps} />
-        </Transition>
-
-        <Transition transited={transited} isConference>
+        </div>
+      ) : (
+        <div className="w-full h-full flex flex-col">
+          <Title title={'your'} id={socket?.id} />
           <Title title={'conference'} id={conferenceId} />
           <div className="mt-2 flex justify-center rounded-sm hover:cursor-pointer">
             <Button
@@ -151,7 +152,7 @@ function App() {
               color={'#F54545'}
             />
           </div>
-          <div className="flex flex-grow flex-wrap relative gap-5">
+          <div className="flex grow flex-wrap relative gap-x-3 gap-y-3">
             {Object.keys(peersOnConference).map((key) => (
               <PeerVideo
                 key={key}
@@ -162,14 +163,17 @@ function App() {
               />
             ))}
           </div>
-          {/* <div className="">
-            <ul>
-              <li>1</li>
-              <li>1</li>
-              <li>1</li>
-            </ul>
-          </div> */}
-          <div className="flex items-center gap-2">
+          {/* <ul className="">
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+            <li>1</li>
+          </ul> */}
+          <div className="mt-auto flex items-center gap-2">
             <input
               type="text"
               value={message}
@@ -181,9 +185,10 @@ function App() {
               disabled={!message}
             />
           </div>
-        </Transition>
-      </div>
+        </div>
+      )}
     </div>
+    // </div>
   );
 }
 

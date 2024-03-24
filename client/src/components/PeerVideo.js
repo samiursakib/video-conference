@@ -12,9 +12,11 @@ const PeerVideo = ({ peerId, stream, layoutChangable, self }) => {
       className={`flex items-stretch justify-center border ${
         layoutChangable
           ? `${
-              self ? 'absolute top-2 right-2 w-[100px] h-32' : 'w-full h-full'
+              self
+                ? 'absolute top-2 right-2 w-1/3 sm:w-2/5 h-24 sm:h-40'
+                : 'w-full h-full'
             }`
-          : 'w-[100px] h-32'
+          : 'w-1/3 sm:w-2/5 h-24 sm:h-40'
       } transition-all duration-300`}
     >
       <h1 className="absolute text-xs text-center">{peerId}</h1>

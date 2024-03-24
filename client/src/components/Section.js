@@ -30,7 +30,7 @@ export default function Section({
     // }
   };
   return (
-    <>
+    <div className="grow">
       <div className="">
         <div
           className={`mb-3 flex flex-col sm:flex-row justify-between items-center gap-2 ${
@@ -108,6 +108,6 @@ export default function Section({
       ) : (
         <span className="mt-2 block">No {title.toLowerCase()} available</span>
       )}
-    </>
+    </div>
   );
 }
