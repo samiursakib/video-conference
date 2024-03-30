@@ -12,6 +12,9 @@ module.exports = {
         gray: '#6b758e',
         black: '#111',
       },
+      spacing: {
+        '3/4': '75%',
+      },
     },
   },
   plugins: [],

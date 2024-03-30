@@ -1,3 +1,6 @@
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 export const getMedia = async () => {
   const mediaStream = await navigator.mediaDevices.getUserMedia({
     audio: false,
@@ -18,6 +21,10 @@ export const setVideoRef = (videoRef, stream) => {
         // console.log('error while playing self stream');
       });
   }
+};
+
+export const cn = (...args) => {
+  return twMerge(clsx(args));
 };
 
 export const isConferenceIdInRooms = (availableRooms, conferenceId) => {

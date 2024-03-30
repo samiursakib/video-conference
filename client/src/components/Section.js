@@ -33,8 +33,8 @@ export default function Section({
     <div className="grow">
       <div className="">
         <div
-          className={`mb-3 flex flex-col sm:flex-row justify-between items-center gap-2 ${
-            forRooms ? 'mt-8' : ''
+          className={`my-5 flex flex-col sm:flex-row items-start sm:justify-between gap-2 ${
+            forRooms ? '' : ''
           }`}
         >
           <div className="font-semibold">{title}</div>

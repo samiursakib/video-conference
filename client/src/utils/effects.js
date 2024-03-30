@@ -41,6 +41,7 @@ export const useSocketEventListener = (
   socket,
   peer,
   setPeersOnConference,
+  setPeerIdsOnConference,
   setAvailableUsers,
   availableRooms,
   setAvailableRooms,
@@ -61,7 +62,7 @@ export const useSocketEventListener = (
       alert(`${socketId} left the room ${room}`);
     });
     socket?.on('receivePeersOnConference', (peersOnConference) => {
-      setPeersOnConference(peersOnConference);
+      // setPeersOnConference(peersOnConference);
     });
     socket?.on('receiveData', (data) => {
       setAvailableUsers(data.users);
@@ -91,9 +92,10 @@ export const useSocketEventListener = (
         console.log(availableRooms);
         setConferenceId(socket.id === conferenceId ? caller : conferenceId);
         setCallOthersTriggered(true);
-        setPeersOnConference((prev) =>
-          peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
-        );
+        setPeerIdsOnConference([...peerIds]);
+        // setPeersOnConference((prev) =>
+        //   peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
+        // );
       }
     );
     socket?.on('leaveCallAlert', (leftPeerId) => {
@@ -127,6 +129,7 @@ export const useCallOthers = (
   peer,
   callOthersTriggered,
   peersOnConference,
+  peerIdsOnConference,
   setPeersOnConference,
   setCalls,
   setTransited
@@ -137,7 +140,7 @@ export const useCallOthers = (
         setTransited(true);
         const selfStream = await getMedia();
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
-        for (const remotePeer in peersOnConference) {
+        for (const remotePeer of peerIdsOnConference) {
           if (remotePeer === peer.id) continue;
           const call = peer.call(remotePeer, selfStream);
           call?.on('stream', (remoteStream) => {

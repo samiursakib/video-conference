@@ -27,6 +27,7 @@ import Title from './components/Title';
 import Profile from './components/Profile';
 
 import './App.css';
+import { cn } from './utils/helper';
 
 function App() {
   const [calls, setCalls] = useState({});
@@ -38,6 +39,7 @@ function App() {
   const [conferenceId, setConferenceId] = useState('');
   const [transited, setTransited] = useState(false);
   const [peersOnConference, setPeersOnConference] = useState({});
+  const [peerIdsOnConference, setPeerIdsOnConference] = useState([]);
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [socketUsername, setSocketUsername] = useState('username');
 
@@ -51,6 +53,7 @@ function App() {
     socket,
     peer,
     setPeersOnConference,
+    setPeerIdsOnConference,
     setAvailableUsers,
     availableRooms,
     setAvailableRooms,
@@ -64,6 +67,7 @@ function App() {
     peer,
     callOthersTriggered,
     peersOnConference,
+    peerIdsOnConference,
     setPeersOnConference,
     setCalls,
     setTransited
@@ -102,7 +106,7 @@ function App() {
 
   return (
     // <div className="">
-    <div className="w-full h-screen bg-blue text-white">
+    <div className=" p-5 h-screen bg-blue text-white w-full sm:w-4/5 md:w-3/5 mx-auto">
       {!transited ? (
         <div className="w-full flex flex-col">
           <Title title={'your'} id={socket?.id} />
@@ -152,7 +156,14 @@ function App() {
               color={'#F54545'}
             />
           </div>
-          <div className="flex grow flex-wrap relative gap-x-3 gap-y-3">
+          <div
+            className={cn([
+              'w-full flex grow flex-wrap relative',
+              {
+                'w-full': Object.keys(peersOnConference).length === 2,
+              },
+            ])}
+          >
             {Object.keys(peersOnConference).map((key) => (
               <PeerVideo
                 key={key}
