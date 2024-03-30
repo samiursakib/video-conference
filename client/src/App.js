@@ -105,7 +105,6 @@ function App() {
   console.log(peersOnConference);
 
   return (
-    // <div className="">
     <div className=" p-5 h-screen bg-blue text-white w-full sm:w-4/5 md:w-3/5 mx-auto">
       {!transited ? (
         <div className="w-full flex flex-col">
@@ -199,7 +198,6 @@ function App() {
         </div>
       )}
     </div>
-    // </div>
   );
 }
 

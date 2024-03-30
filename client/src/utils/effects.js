@@ -89,7 +89,7 @@ export const useSocketEventListener = (
     socket?.on(
       'receiveCallOthersTriggered',
       (peerIds, conferenceId, caller) => {
-        console.log(availableRooms);
+        console.log('peerIds: ', peerIds);
         setConferenceId(socket.id === conferenceId ? caller : conferenceId);
         setCallOthersTriggered(true);
         setPeerIdsOnConference([...peerIds]);
@@ -106,9 +106,11 @@ export const useSocketEventListener = (
       try {
         setTransited(true);
         const selfStream = await getMedia();
+        console.log(peer.id, selfStream);
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
+          console.log(call.peer, remoteStream);
           setPeersOnConference((prev) => ({
             ...prev,
             [call.peer]: remoteStream,
@@ -139,11 +141,14 @@ export const useCallOthers = (
       if (callOthersTriggered) {
         setTransited(true);
         const selfStream = await getMedia();
+        console.log(peer.id, selfStream);
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
+        console.log('peerIdsOnConference: ', peerIdsOnConference);
         for (const remotePeer of peerIdsOnConference) {
           if (remotePeer === peer.id) continue;
           const call = peer.call(remotePeer, selfStream);
           call?.on('stream', (remoteStream) => {
+            console.log(remotePeer, remoteStream);
             setPeersOnConference((prev) => ({
               ...prev,
               [remotePeer]: remoteStream,

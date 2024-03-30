@@ -6,9 +6,7 @@ const PeerVideo = ({ peerId, stream, layoutChangable, self }) => {
   useEffect(() => {
     setVideoRef(videoRef, stream);
   }, [stream]);
-  console.log('layoutChangable', layoutChangable);
   return (
-    // <div className="resize-x w-full border-[10px]">
     <div
       className={cn([
         'p-2 flex flex-col w-1/2 sm:w-1/2 transition-all duration-300',
@@ -20,15 +18,12 @@ const PeerVideo = ({ peerId, stream, layoutChangable, self }) => {
         },
       ])}
     >
-      {/* <div className="relative pb-3/4 w-full border-3 border-green-500"> */}
       <h1 className="text-center text-xs">{peerId}</h1>
       <video
         className="w-full aspect-video object-cover object-center"
         ref={videoRef}
       ></video>
-      {/* </div> */}
     </div>
-    // </div>
   );
 };
 

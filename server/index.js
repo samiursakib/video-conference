@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
       socketId,
       conferenceId
     );
-    // console.log(peersOnConference);
+    console.log('peersOnConference: ', peersOnConference);
     io.to(conferenceId).emit(
       'receiveCallOthersTriggered',
       peersOnConference,
