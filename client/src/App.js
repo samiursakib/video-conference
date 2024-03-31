@@ -28,6 +28,7 @@ import Profile from './components/Profile';
 
 import './App.css';
 import { cn } from './utils/helper';
+import { AiFillMessage } from 'react-icons/ai';
 
 function App() {
   const [calls, setCalls] = useState({});
@@ -42,6 +43,7 @@ function App() {
   const [peerIdsOnConference, setPeerIdsOnConference] = useState([]);
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [socketUsername, setSocketUsername] = useState('username');
+  const [isConversationOpen, setIsConversationOpen] = useState(false);
 
   const { socket, setSocket, peer, setPeer } =
     useSocketInitialization(socketUsername);
@@ -102,10 +104,10 @@ function App() {
     joinedRooms,
   };
 
-  console.log(peersOnConference);
+  console.log(Object.keys(peersOnConference).length, isConversationOpen);
 
   return (
-    <div className=" p-5 h-screen bg-blue text-white w-full sm:w-4/5 md:w-3/5 mx-auto">
+    <div className=" p-5 h-screen bg-blue text-white w-full mx-auto">
       {!transited ? (
         <div className="w-full flex flex-col">
           <Title title={'your'} id={socket?.id} />
@@ -123,77 +125,84 @@ function App() {
         <div className="w-full h-full flex flex-col">
           <Title title={'your'} id={socket?.id} />
           <Title title={'conference'} id={conferenceId} />
-          <div className="mt-2 flex justify-center rounded-sm hover:cursor-pointer">
-            <Button
-              onClick={() => setTransited(false)}
-              icon={<IoMdArrowRoundBack />}
-              disabled={false}
-              circle={true}
-            />
-            <Button
-              className="ml-auto"
-              onClick={async () => await startCall(socket, conferenceId)}
-              icon={<MdAddCall />}
-              disabled={false}
-              circle
-            />
-            <Button
-              className="ml-2"
-              onClick={() =>
-                endCall(
-                  socket,
-                  calls,
-                  setCalls,
-                  conferenceId,
-                  setCallOthersTriggered,
-                  setPeersOnConference
-                )
-              }
-              icon={<MdCallEnd />}
-              disabled={false}
-              circle
-              color={'#F54545'}
-            />
-          </div>
-          <div
-            className={cn([
-              'w-full flex grow flex-wrap relative',
-              {
-                'w-full': Object.keys(peersOnConference).length === 2,
-              },
-            ])}
-          >
-            {Object.keys(peersOnConference).map((key) => (
-              <PeerVideo
-                key={key}
-                peerId={key}
-                stream={peersOnConference[key]}
-                layoutChangable={Object.keys(peersOnConference).length === 2}
-                self={key === socket.id}
+          <div className="flex flex-row items-stretch">
+            <div className="flex grow w-full">
+              <div className={cn(['flex grow flex-wrap relative'])}>
+                {Object.keys(peersOnConference).map((key) => (
+                  <PeerVideo
+                    key={key}
+                    peerId={key}
+                    stream={peersOnConference[key]}
+                    layoutChangable={
+                      Object.keys(peersOnConference).length === 2
+                    }
+                    self={key === socket.id}
+                  />
+                ))}
+              </div>
+              {Object.keys(peersOnConference).length && isConversationOpen && (
+                <div className="w-80 flex flex-col grow">
+                  <ul className="flex flex-col grow">
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                  </ul>
+                  <div className="mt-auto flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <Button
+                      onClick={() => sendMessage(message, conferenceId)}
+                      icon={<BsFillSendFill />}
+                      disabled={!message}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="w-16 flex flex-col justify-start border-l border-slate-700 rounded-sm hover:cursor-pointer">
+              <Button
+                onClick={() => setTransited(false)}
+                icon={<IoMdArrowRoundBack />}
+                disabled={false}
+                circle
               />
-            ))}
-          </div>
-          {/* <ul className="">
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-            <li>1</li>
-          </ul> */}
-          <div className="mt-auto flex items-center gap-2">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <Button
-              onClick={() => sendMessage(message, conferenceId)}
-              icon={<BsFillSendFill />}
-              disabled={!message}
-            />
+              <Button
+                onClick={() => setIsConversationOpen((prev) => !prev)}
+                icon={<AiFillMessage />}
+                circle
+              />
+              <Button
+                onClick={async () => await startCall(socket, conferenceId)}
+                icon={<MdAddCall />}
+                disabled={false}
+                circle
+              />
+              <Button
+                className="ml-2"
+                onClick={() =>
+                  endCall(
+                    socket,
+                    calls,
+                    setCalls,
+                    conferenceId,
+                    setCallOthersTriggered,
+                    setPeersOnConference
+                  )
+                }
+                icon={<MdCallEnd />}
+                disabled={false}
+                circle
+                color={'#F54545'}
+              />
+            </div>
           </div>
         </div>
       )}

@@ -41,13 +41,11 @@ export default function Section({
           {forRooms && (
             <div className="flex items-center gap-2">
               <input
-                // className="w-full"
                 type="text"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
               />
               <Button
-                className=""
                 // action={'Create'}
                 onClick={() => {
                   joinRoom(socket, room, setJoinedRooms);
@@ -96,7 +94,7 @@ export default function Section({
                   <Button
                     // action={'Chat'}
                     onClick={() => enterConference(item)}
-                    icon={<AiFillMessage />}
+                    icon={<IoEnter />}
                     disabled={false}
                     full
                   />

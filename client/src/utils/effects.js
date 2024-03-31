@@ -163,5 +163,6 @@ export const useCallOthers = (
       }
     };
     callOthers();
+    console.log('effects: ', callOthersTriggered);
   }, [callOthersTriggered, peer]);
 };
