@@ -44,6 +44,7 @@ function App() {
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [socketUsername, setSocketUsername] = useState('username');
   const [isConversationOpen, setIsConversationOpen] = useState(false);
+  const [conversations, setConversations] = useState({});
 
   const { socket, setSocket, peer, setPeer } =
     useSocketInitialization(socketUsername);
@@ -63,7 +64,8 @@ function App() {
     setCallOthersTriggered,
     setTransited,
     calls,
-    setCalls
+    setCalls,
+    setConversations
   );
   useCallOthers(
     peer,
@@ -104,7 +106,7 @@ function App() {
     joinedRooms,
   };
 
-  console.log(Object.keys(peersOnConference).length, isConversationOpen);
+  console.log(conversations);
 
   return (
     <div className=" p-5 h-screen bg-blue text-white w-full mx-auto">
@@ -126,31 +128,33 @@ function App() {
           <Title title={'your'} id={socket?.id} />
           <Title title={'conference'} id={conferenceId} />
           <div className="flex flex-row items-stretch">
-            <div className="flex grow w-full">
-              <div className={cn(['flex grow flex-wrap relative'])}>
-                {Object.keys(peersOnConference).map((key) => (
-                  <PeerVideo
-                    key={key}
-                    peerId={key}
-                    stream={peersOnConference[key]}
-                    layoutChangable={
-                      Object.keys(peersOnConference).length === 2
-                    }
-                    self={key === socket.id}
-                  />
-                ))}
-              </div>
-              {Object.keys(peersOnConference).length && isConversationOpen && (
-                <div className="w-80 flex flex-col grow">
+            <div className="flex grow">
+              {Object.keys(peersOnConference).length !== 0 && (
+                <div className={cn(['flex grow flex-wrap relative'])}>
+                  {Object.keys(peersOnConference).map((key) => (
+                    <PeerVideo
+                      key={key}
+                      peerId={key}
+                      stream={peersOnConference[key]}
+                      layoutChangable={
+                        Object.keys(peersOnConference).length === 2
+                      }
+                      self={key === socket.id}
+                    />
+                  ))}
+                </div>
+              )}
+              {isConversationOpen && (
+                <div className="flex flex-col grow">
                   <ul className="flex flex-col grow">
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
+                    {conferenceId in conversations
+                      ? conversations[conferenceId].map((m, id) => (
+                          <li key={id} className="mb-2">
+                            <div>{m.sender.substr(-3)}</div>
+                            <div>{m.message}</div>
+                          </li>
+                        ))
+                      : null}
                   </ul>
                   <div className="mt-auto flex items-center gap-2">
                     <input
@@ -159,7 +163,15 @@ function App() {
                       onChange={(e) => setMessage(e.target.value)}
                     />
                     <Button
-                      onClick={() => sendMessage(message, conferenceId)}
+                      onClick={() =>
+                        sendMessage(
+                          socket,
+                          message,
+                          conferenceId,
+                          setMessage,
+                          setConversations
+                        )
+                      }
                       icon={<BsFillSendFill />}
                       disabled={!message}
                     />

@@ -27,6 +27,6 @@ export const cn = (...args) => {
   return twMerge(clsx(args));
 };
 
-export const isConferenceIdInRooms = (availableRooms, conferenceId) => {
-  return conferenceId in availableRooms;
+export const isIdInRooms = (availableRooms, id) => {
+  return id in availableRooms;
 };
