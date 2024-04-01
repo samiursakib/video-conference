@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  height: 100%;
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -15,10 +11,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100%;
-  height: 100%;
-  background: #17202e;
-  /* overflow: hidden; */
+  box-sizing: border-box;
 }
 
 code {
