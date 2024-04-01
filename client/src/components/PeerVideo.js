@@ -9,9 +9,9 @@ const PeerVideo = ({ peerId, stream, layoutChangable, self }) => {
   return (
     <div
       className={cn([
-        'p-2 flex flex-col w-1/2 sm:w-1/2 transition-all duration-300',
+        'flex flex-col basis-40 rounded-lg transition-all duration-300',
         {
-          'absolute top-2 right-2 w-1/4 sm:w-1/4': layoutChangable && self,
+          'absolute top-2 right-2 w-1/4': layoutChangable && self,
         },
         {
           'w-full sm:w-full': layoutChangable && !self,

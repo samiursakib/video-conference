@@ -43,7 +43,7 @@ function App() {
   const [peerIdsOnConference, setPeerIdsOnConference] = useState([]);
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
   const [socketUsername, setSocketUsername] = useState('username');
-  const [isConversationOpen, setIsConversationOpen] = useState(false);
+  const [isConversationOpen, setIsConversationOpen] = useState(true);
   const [conversations, setConversations] = useState({});
 
   const { socket, setSocket, peer, setPeer } =
@@ -124,21 +124,15 @@ function App() {
           <Section {...roomsProps} />
         </div>
       ) : (
-        <div className="flex flex-col text-black h-full">
-          <div className="bg-slate-500 basis-16"></div>
-          <div className="bg-slate-200 basis-16 flex-grow flex">
-            <div className="bg-green-200 grow-[2]"></div>
-            <div className="bg-red-200 grow"></div>
-            <div className="bg-yellow-200 basis-16"></div>
-          </div>
-        </div>
-        // <div className="w-full h-full flex flex-col">
-        //   <Title title={'your'} id={socket?.id} />
-        //   <Title title={'conference'} id={conferenceId} />
-        //   <div className="flex flex-row items-stretch">
-        //     <div className="flex grow">
+        // <div className="flex flex-col text-black h-full">
+        //   <div className="bg-slate-500 basis-16">
+        //     <Title title={'your'} id={socket?.id} />
+        //   </div>
+        //   <div className="bg-slate-300 grow flex">
+        //     <div className="bg-green-500 grow border-8 flex">
+        //       <div className="bg-purple-300 basis-40 aspect-video"></div>
         //       {Object.keys(peersOnConference).length !== 0 && (
-        //         <div className={cn(['flex grow flex-wrap relative'])}>
+        //         <div className={cn(['flex flex-wrap gap-2 relative'])}>
         //           {Object.keys(peersOnConference).map((key) => (
         //             <PeerVideo
         //               key={key}
@@ -152,42 +146,48 @@ function App() {
         //           ))}
         //         </div>
         //       )}
-        //       {isConversationOpen && (
-        //         <div className="flex flex-col grow">
-        //           <ul className="flex flex-col grow">
-        //             {conferenceId in conversations
-        //               ? conversations[conferenceId].map((m, id) => (
-        //                   <li key={id} className="mb-2">
-        //                     <div>{m.sender.substr(-3)}</div>
-        //                     <div>{m.message}</div>
-        //                   </li>
-        //                 ))
-        //               : null}
-        //           </ul>
-        //           <div className="mt-auto flex items-center gap-2">
-        //             <input
-        //               type="text"
-        //               value={message}
-        //               onChange={(e) => setMessage(e.target.value)}
-        //             />
-        //             <Button
-        //               onClick={() =>
-        //                 sendMessage(
-        //                   socket,
-        //                   message,
-        //                   conferenceId,
-        //                   setMessage,
-        //                   setConversations
-        //                 )
-        //               }
-        //               icon={<BsFillSendFill />}
-        //               disabled={!message}
-        //             />
+        //     </div>
+        //     {isConversationOpen && (
+        //       <div className="bg-red-500 grow flex flex-col border-8 border-green-500">
+        //         <div className="basis-[calc(100vh-7rem)] overflow-auto">
+        //           <div className="bg-green-300 flex flex-col">
+        //             <ul className="flex flex-col">
+        //               {conferenceId in conversations
+        //                 ? conversations[conferenceId].map((m, id) => (
+        //                     <li key={id} className="mb-2">
+        //                       <div>{m.sender.substr(-3)}</div>
+        //                       <div>{m.message}</div>
+        //                     </li>
+        //                   ))
+        //                 : null}
+        //             </ul>
         //           </div>
         //         </div>
-        //       )}
-        //     </div>
-        //     <div className="w-16 flex flex-col justify-start border-l border-slate-700 rounded-sm hover:cursor-pointer">
+        //         <div className="pl-2 bg-gray basis-12 flex justify-between items-center">
+        //           <input
+        //             className="w-0 grow"
+        //             type="text"
+        //             value={message}
+        //             onChange={(e) => setMessage(e.target.value)}
+        //           />
+        //           <Button
+        //             className="basis-10"
+        //             onClick={() =>
+        //               sendMessage(
+        //                 socket,
+        //                 message,
+        //                 conferenceId,
+        //                 setMessage,
+        //                 setConversations
+        //               )
+        //             }
+        //             icon={<BsFillSendFill />}
+        //             disabled={!message}
+        //           />
+        //         </div>
+        //       </div>
+        //     )}
+        //     <div className="bg-yellow-500 basis-16 flex flex-col items-center gap-2 border-l">
         //       <Button
         //         onClick={() => setTransited(false)}
         //         icon={<IoMdArrowRoundBack />}
@@ -206,7 +206,6 @@ function App() {
         //         circle
         //       />
         //       <Button
-        //         className="ml-2"
         //         onClick={() =>
         //           endCall(
         //             socket,
@@ -225,6 +224,18 @@ function App() {
         //     </div>
         //   </div>
         // </div>
+        <div className="flex flex-col h-full">
+          <div className="bg-slate-900 basis-16"></div>
+          <div className="bg-slate-300 grow flex">
+            <div className="bg-green-400 border-8 border-yellow-300 grow-[2] w-[400px] flex flex-wrap gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+                <div key={i} className="bg-purple-300 w-[200px] h-40"></div>
+              ))}
+            </div>
+            <div className="bg-red-400 border-8 border-white grow flex"></div>
+            <div className="bg-yellow-400 border-8 border-green-300 basis-12 flex"></div>
+          </div>
+        </div>
       )}
     </div>
   );
