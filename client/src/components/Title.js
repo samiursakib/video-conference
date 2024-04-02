@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Title({ title, id }) {
   return (
-    <div className="text-center text-lg">
+    <div className="mt-4 text-center text-lg">
       {id ? (
         <>
           {title.charAt(0).toUpperCase() + title.slice(1)} id :{' '}

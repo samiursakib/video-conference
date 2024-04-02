@@ -29,6 +29,8 @@ import Profile from './components/Profile';
 import './App.css';
 import { cn } from './utils/helper';
 import { AiFillMessage } from 'react-icons/ai';
+import avatarSekeletonMale from './images/avatar-skeleton-male.png';
+import Message from './components/Message';
 
 function App() {
   const [calls, setCalls] = useState({});
@@ -125,12 +127,12 @@ function App() {
         </div>
       ) : (
         <div className="flex flex-col h-full">
-          <div className="bg-slate-900 basis-16 text-slate-400 flex justify-center items-center flex-col">
+          <div className="bg-slate-900 basis-16 text-slate-400 flex justify-center items-center flex-col gap-1">
             <span className="">{socket.id}</span>
             <span className="text-sm">{conferenceId}</span>
           </div>
           <div className="grow flex">
-            <div className="flex-[2_1_0] flex flex-wrap justify-around items-center">
+            <div className="w-2/3 flex flex-wrap justify-around items-center">
               {Object.keys(peersOnConference).length !== 0 ? (
                 Object.keys(peersOnConference).map((key) => (
                   <PeerVideo
@@ -144,16 +146,18 @@ function App() {
               )}
             </div>
             {/* {isConversationOpen && ( */}
-            <div className="grow flex flex-col border-l border-slate-700">
+            <div className="w-1/3 flex flex-col border-l border-slate-700">
               <div className="basis-[calc(100vh-7rem)] overflow-auto">
                 <div className="flex flex-col">
-                  <ul className="flex flex-col">
+                  <ul className="flex flex-col gap-1">
                     {conferenceId in conversations
                       ? conversations[conferenceId].map((m, id) => (
-                          <li key={id} className="mb-2">
-                            <div>{m.sender.substr(-3)}</div>
-                            <div>{m.message}</div>
-                          </li>
+                          <Message
+                            key={id}
+                            sender={m.sender.substr(-3)}
+                            avatar={avatarSekeletonMale}
+                            msg={m.message}
+                          />
                         ))
                       : null}
                   </ul>
