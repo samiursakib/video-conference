@@ -1,8 +1,21 @@
 import { getMedia, setVideoRef } from './helper';
 
-export const sendMessage = (socket, msg, to, setMessage) => {
+export const sendMessage = (socket, msg, to, setMessage, setConversations) => {
   socket.emit('sendMessage', msg, to);
   setMessage('');
+  setConversations((prev) => {
+    const oldConversation = to in prev ? prev[to] : [];
+    const newConversation = [
+      ...oldConversation,
+      {
+        sender: socket.id,
+        message: msg,
+        time: new Date().toLocaleString(),
+      },
+    ];
+    console.log('action: ', newConversation);
+    return { ...prev, [to]: newConversation };
+  });
 };
 
 export const joinRoom = (socket, room, setJoinedRooms) => {

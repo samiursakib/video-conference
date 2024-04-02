@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 
-import { getMedia, isConferenceIdInRooms } from './helper';
+import { getMedia, isConferenceIdInRooms, isIdInRooms } from './helper';
 
 const host = 'https://video-conference-server-ncpz.onrender.com';
 // const host = 'http://localhost:80';
@@ -41,6 +41,7 @@ export const useSocketEventListener = (
   socket,
   peer,
   setPeersOnConference,
+  setPeerIdsOnConference,
   setAvailableUsers,
   availableRooms,
   setAvailableRooms,
@@ -48,11 +49,28 @@ export const useSocketEventListener = (
   setCallOthersTriggered,
   setTransited,
   calls,
-  setCalls
+  setCalls,
+  setConversations
 ) => {
   useEffect(() => {
-    socket?.on('receiveMessage', (msg, from) => {
-      alert(`${msg} from ${from}`);
+    let ignore = false;
+    socket?.on('receiveMessage', (msg, from, room) => {
+      // alert(`${msg} from ${from} room ${room}`);
+      let temp = socket.id === room ? from : room;
+      if (!ignore) {
+        setConversations((prev) => {
+          const oldConversation = temp in prev ? prev[temp] : [];
+          const newConversation = [
+            ...oldConversation,
+            {
+              sender: from,
+              message: msg,
+              time: new Date().toLocaleString(),
+            },
+          ];
+          return { ...prev, [temp]: newConversation };
+        });
+      }
     });
     socket?.on('joinRoomAlert', (socketId, room) => {
       //
@@ -61,7 +79,7 @@ export const useSocketEventListener = (
       alert(`${socketId} left the room ${room}`);
     });
     socket?.on('receivePeersOnConference', (peersOnConference) => {
-      setPeersOnConference(peersOnConference);
+      // setPeersOnConference(peersOnConference);
     });
     socket?.on('receiveData', (data) => {
       setAvailableUsers(data.users);
@@ -88,12 +106,10 @@ export const useSocketEventListener = (
     socket?.on(
       'receiveCallOthersTriggered',
       (peerIds, conferenceId, caller) => {
-        console.log(availableRooms);
+        console.log('peerIds: ', peerIds);
         setConferenceId(socket.id === conferenceId ? caller : conferenceId);
         setCallOthersTriggered(true);
-        setPeersOnConference((prev) =>
-          peerIds.reduce((obj, key) => ({ ...obj, [key]: null }), {})
-        );
+        setPeerIdsOnConference([...peerIds]);
       }
     );
     socket?.on('leaveCallAlert', (leftPeerId) => {
@@ -104,9 +120,11 @@ export const useSocketEventListener = (
       try {
         setTransited(true);
         const selfStream = await getMedia();
+        console.log(peer.id, selfStream);
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
+          console.log(call.peer, remoteStream);
           setPeersOnConference((prev) => ({
             ...prev,
             [call.peer]: remoteStream,
@@ -120,6 +138,9 @@ export const useSocketEventListener = (
         console.log('error while receiving call');
       }
     });
+    return () => {
+      ignore = true;
+    };
   }, [socket, peer]);
 };
 
@@ -127,6 +148,7 @@ export const useCallOthers = (
   peer,
   callOthersTriggered,
   peersOnConference,
+  peerIdsOnConference,
   setPeersOnConference,
   setCalls,
   setTransited
@@ -136,11 +158,14 @@ export const useCallOthers = (
       if (callOthersTriggered) {
         setTransited(true);
         const selfStream = await getMedia();
+        // console.log(peer.id, selfStream);
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
-        for (const remotePeer in peersOnConference) {
+        // console.log('peerIdsOnConference: ', peerIdsOnConference);
+        for (const remotePeer of peerIdsOnConference) {
           if (remotePeer === peer.id) continue;
           const call = peer.call(remotePeer, selfStream);
           call?.on('stream', (remoteStream) => {
+            // console.log(remotePeer, remoteStream);
             setPeersOnConference((prev) => ({
               ...prev,
               [remotePeer]: remoteStream,

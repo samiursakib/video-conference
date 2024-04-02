@@ -4,18 +4,14 @@
 
 body {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url('./images/background3.jpg');
-  background-position: center;
-  background-size: cover;
-  width: 100%;
-  height: 100vh;
-  color: #cbe4de;
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
 code {
@@ -25,9 +21,9 @@ code {
 
 @layer base {
   input[type='text'] {
-    @apply px-3 py-1 block w-full h-[35px] bg-transparent text-sm outline-none font-normal border border-bermuda-border rounded-md;
+    @apply p-2 bg-transparent text-xs outline-none border border-slate-700 rounded-md;
   }
   button {
-    @apply p-2 outline-none focus:ring-0 focus:outline-none text-2xl hover:cursor-pointer;
+    @apply p-2  outline-none focus:ring-0 focus:outline-none text-2xl hover:cursor-pointer;
   }
 }

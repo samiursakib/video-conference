@@ -25,9 +25,8 @@ io.on('connection', (socket) => {
   io.emit('receiveData', data);
 
   socket.on('sendMessage', (msg, to) => {
-    const from = socket.id;
-    console.log('message from: ', from);
-    socket.broadcast.to(to).emit('receiveMessage', msg, from);
+    console.log('message from: ', socket.id);
+    socket.broadcast.to(to).emit('receiveMessage', msg, socket.id, to);
   });
 
   socket.on('joinRoom', (room) => {
@@ -55,7 +54,7 @@ io.on('connection', (socket) => {
       socketId,
       conferenceId
     );
-    // console.log(peersOnConference);
+    console.log('peersOnConference: ', peersOnConference);
     io.to(conferenceId).emit(
       'receiveCallOthersTriggered',
       peersOnConference,

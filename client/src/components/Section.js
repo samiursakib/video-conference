@@ -30,24 +30,22 @@ export default function Section({
     // }
   };
   return (
-    <>
+    <div className="grow">
       <div className="">
         <div
-          className={`mb-3 flex flex-col sm:flex-row justify-between items-center gap-2 ${
-            forRooms ? 'mt-8' : ''
+          className={`my-5 flex flex-col sm:flex-row items-start sm:justify-between gap-2 ${
+            forRooms ? '' : ''
           }`}
         >
           <div className="font-semibold">{title}</div>
           {forRooms && (
             <div className="flex items-center gap-2">
               <input
-                // className="w-full"
                 type="text"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
               />
               <Button
-                className=""
                 // action={'Create'}
                 onClick={() => {
                   joinRoom(socket, room, setJoinedRooms);
@@ -96,7 +94,7 @@ export default function Section({
                   <Button
                     // action={'Chat'}
                     onClick={() => enterConference(item)}
-                    icon={<AiFillMessage />}
+                    icon={<IoEnter />}
                     disabled={false}
                     full
                   />
@@ -108,6 +106,6 @@ export default function Section({
       ) : (
         <span className="mt-2 block">No {title.toLowerCase()} available</span>
       )}
-    </>
+    </div>
   );
 }
