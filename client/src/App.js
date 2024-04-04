@@ -154,8 +154,7 @@ function App() {
                       ? conversations[conferenceId].map((m, id) => (
                           <Message
                             key={id}
-                            sender={findSocket(socketsData, m.sender).username}
-                            // sender={m.sender}
+                            sender={findSocket(socketsData, m.sender)?.username}
                             avatar={avatarSekeletonMale}
                             msg={m.message}
                           />
