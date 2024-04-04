@@ -3,7 +3,11 @@ const express = require('express');
 const serverless = require('serverless-http');
 const { Server } = require('socket.io');
 
-const { fetchData, fetchPeersOnConference } = require('./utils.js');
+const {
+  fetchData,
+  fetchPeersOnConference,
+  fetchSocketsData,
+} = require('./utils.js');
 
 const port = process.env.PORT || 80;
 
@@ -19,10 +23,14 @@ const io = new Server(server, {
   },
 });
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('new user connected: ', socket.id);
+  socket.data.id = socket.id;
+  socket.data.username = 'username';
   const data = fetchData(io);
+  const fetchedSocketsData = await fetchSocketsData(io);
   io.emit('receiveData', data);
+  io.emit('updateData', fetchedSocketsData);
 
   socket.on('sendMessage', (msg, to) => {
     console.log('message from: ', socket.id);
@@ -66,6 +74,14 @@ io.on('connection', (socket) => {
   socket.on('endCall', (peerId, room) => {
     console.log('ended call by ', peerId, ' from ', room);
     socket.broadcast.to(room).emit('peerEndCall', peerId);
+  });
+
+  socket.on('changeData', async (socketUsername) => {
+    socket.data.id = socket.id;
+    socket.data.username = socketUsername;
+    const fetchedSocketsData = await fetchSocketsData(io);
+    console.log(fetchedSocketsData);
+    io.emit('updateData', fetchedSocketsData);
   });
 
   socket.on('forceDisconnect', () => {

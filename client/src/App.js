@@ -20,17 +20,16 @@ import {
 } from './utils/actions';
 
 import Section from './components/Section';
-import Transition from './components/Transition';
 import Button from './components/Button';
 import PeerVideo from './components/PeerVideo';
 import Title from './components/Title';
 import Profile from './components/Profile';
 
 import './App.css';
-import { cn } from './utils/helper';
 import { AiFillMessage } from 'react-icons/ai';
 import avatarSekeletonMale from './images/avatar-skeleton-male.png';
 import Message from './components/Message';
+import { findSocket } from './utils/helper';
 
 function App() {
   const [calls, setCalls] = useState({});
@@ -47,6 +46,7 @@ function App() {
   const [socketUsername, setSocketUsername] = useState('username');
   const [isConversationOpen, setIsConversationOpen] = useState(true);
   const [conversations, setConversations] = useState({});
+  const [socketsData, setSocketsData] = useState([]);
 
   const { socket, setSocket, peer, setPeer } =
     useSocketInitialization(socketUsername);
@@ -67,7 +67,9 @@ function App() {
     setTransited,
     calls,
     setCalls,
-    setConversations
+    setConversations,
+    socketsData,
+    setSocketsData
   );
   useCallOthers(
     peer,
@@ -85,11 +87,9 @@ function App() {
     peersOnConference,
     setPeersOnConference,
     setTransited,
-    message,
-    setMessage,
-    sendMessage,
     room,
     setRoom,
+    socketsData,
   };
   const usersProps = {
     ...commonProps,
@@ -108,13 +108,13 @@ function App() {
     joinedRooms,
   };
 
-  console.log(conversations);
+  console.log(socketsData);
 
   return (
     <div className="w-full h-screen mx-auto bg-blue text-white">
       {!transited ? (
         <div className="w-full flex flex-col">
-          <Title title={'your'} id={socket?.id} />
+          <Title title={'your'} id={socket?.username} />
           <Profile
             avatarUrl={socket?.avatarUrl}
             username={socket?.username}
@@ -128,7 +128,7 @@ function App() {
       ) : (
         <div className="flex flex-col h-full">
           <div className="bg-slate-900 basis-16 text-slate-400 flex justify-center items-center flex-col gap-1">
-            <span className="">{socket.id}</span>
+            <span className="">{socket?.username}</span>
             <span className="text-sm">{conferenceId}</span>
           </div>
           <div className="grow flex">
@@ -154,7 +154,8 @@ function App() {
                       ? conversations[conferenceId].map((m, id) => (
                           <Message
                             key={id}
-                            sender={m.sender.substr(-3)}
+                            sender={findSocket(socketsData, m.sender).username}
+                            // sender={m.sender}
                             avatar={avatarSekeletonMale}
                             msg={m.message}
                           />

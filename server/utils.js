@@ -24,4 +24,9 @@ const fetchPeersOnConference = (io, socketId, conferenceId) => {
   return temp;
 };
 
-module.exports = { fetchData, fetchPeersOnConference };
+const fetchSocketsData = async (io) => {
+  const fetchedSockets = await io.fetchSockets();
+  return fetchedSockets.map((s) => s.data);
+};
+
+module.exports = { fetchData, fetchPeersOnConference, fetchSocketsData };

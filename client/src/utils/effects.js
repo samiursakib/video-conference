@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 
-import { getMedia, isConferenceIdInRooms, isIdInRooms } from './helper';
+import {
+  findSocket,
+  getMedia,
+  isConferenceIdInRooms,
+  isIdInRooms,
+} from './helper';
 
-const host = 'https://video-conference-server-ncpz.onrender.com';
-// const host = 'http://localhost:80';
+// const host = 'https://video-conference-server-ncpz.onrender.com';
+const host = 'http://localhost:80';
 
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
@@ -31,6 +36,7 @@ export const useSetUsername = (socket, socketUsername) => {
   useEffect(() => {
     if (runSetUsername) {
       socket.username = socketUsername;
+      socket.emit('changeData', socketUsername);
       setRunSetUsername(false);
     }
   }, [runSetUsername, socket, socketUsername]);
@@ -50,12 +56,13 @@ export const useSocketEventListener = (
   setTransited,
   calls,
   setCalls,
-  setConversations
+  setConversations,
+  socketsData,
+  setSocketsData
 ) => {
   useEffect(() => {
     let ignore = false;
     socket?.on('receiveMessage', (msg, from, room) => {
-      // alert(`${msg} from ${from} room ${room}`);
       let temp = socket.id === room ? from : room;
       if (!ignore) {
         setConversations((prev) => {
@@ -114,6 +121,10 @@ export const useSocketEventListener = (
     );
     socket?.on('leaveCallAlert', (leftPeerId) => {
       //
+    });
+    socket?.on('updateData', (fetchedSocketsData) => {
+      setSocketsData(fetchedSocketsData);
+      console.log('effect: ', fetchedSocketsData);
     });
     socket?.emit('fetchData');
     peer?.on('call', async (call) => {
