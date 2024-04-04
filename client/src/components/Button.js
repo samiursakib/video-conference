@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export default function Button({
+const Button = ({
   className,
   action,
   onClick,
@@ -9,7 +9,7 @@ export default function Button({
   full,
   circle,
   color,
-}) {
+}) => {
   return (
     <button
       className={`flex items-center justify-center text-bermuda-dark focus:outline focus:outline-bermuda-dark px-1 py-1 space-x-2 ${
@@ -24,4 +24,6 @@ export default function Button({
       {action && <span>{action}</span>}
     </button>
   );
-}
+};
+
+export default memo(Button);

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { RiEditBoxFill } from 'react-icons/ri';
 import Button from './Button';
 
-export default function Profile({
+const Profile = ({
   avatarUrl,
   username,
   socketUsername,
   setSocketUsername,
   setRunSetUsername,
-}) {
+}) => {
   const [hiddenEditInput, setHiddenEditInput] = useState(true);
   const handleStartEditInput = () => setHiddenEditInput(false);
   const handleStopEditInput = () => {
@@ -35,4 +35,6 @@ export default function Profile({
       />
     </div>
   );
-}
+};
+
+export default memo(Profile);

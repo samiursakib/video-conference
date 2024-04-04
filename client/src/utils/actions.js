@@ -13,7 +13,6 @@ export const sendMessage = (socket, msg, to, setMessage, setConversations) => {
         time: new Date().toLocaleString(),
       },
     ];
-    console.log('action: ', newConversation);
     return { ...prev, [to]: newConversation };
   });
 };

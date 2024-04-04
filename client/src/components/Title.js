@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export default function Title({ title, id }) {
+const Title = ({ title, id }) => {
   return (
     <div className="mt-4 text-center text-lg">
       {id ? (
@@ -13,4 +13,6 @@ export default function Title({ title, id }) {
       )}
     </div>
   );
-}
+};
+
+export default memo(Title);

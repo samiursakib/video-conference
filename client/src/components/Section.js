@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { memo } from 'react';
 import { MdJoinFull, MdLibraryAdd } from 'react-icons/md';
 import { IoEnter, IoLogOut } from 'react-icons/io5';
-import { AiFillMessage } from 'react-icons/ai';
 import Button from './Button';
+import { findSocket } from '../utils/helper';
 
-export default function Section({
+const Section = ({
   socket,
   setConferenceId,
   setTransited,
-  message,
-  setMessage,
-  sendMessage,
   room,
   setRoom,
+  socketsData,
   title,
   list,
   forRooms,
@@ -20,23 +18,16 @@ export default function Section({
   leaveRoom,
   joinedRooms,
   setJoinedRooms,
-  // setGroupCall,
-}) {
+}) => {
   const enterConference = (conferenceId) => {
     setTransited(true);
     setConferenceId(conferenceId);
-    // if (forRooms) {
-    //   setGroupCall(true);
-    // }
   };
+  console.log(socketsData);
   return (
     <div className="grow">
       <div className="">
-        <div
-          className={`my-5 flex flex-col sm:flex-row items-start sm:justify-between gap-2 ${
-            forRooms ? '' : ''
-          }`}
-        >
+        <div className="my-5 flex flex-col sm:flex-row items-start sm:justify-between gap-2">
           <div className="font-semibold">{title}</div>
           {forRooms && (
             <div className="flex items-center gap-2">
@@ -65,7 +56,9 @@ export default function Section({
               className="flex justify-between items-center hover:bg-[#fff]/20 pl-3 pr-1 py-1 rounded-md transition-all duration"
               key={index}
             >
-              <span className="text-md">{item}</span>
+              <span className="text-md">
+                {!forRooms ? findSocket(socketsData, item)?.username : item}
+              </span>
               {forRooms ? (
                 <span>
                   {!joinedRooms?.some((r) => r === item) ? (
@@ -92,7 +85,7 @@ export default function Section({
               ) : (
                 <span>
                   <Button
-                    // action={'Chat'}
+                    // action={'Enter'}
                     onClick={() => enterConference(item)}
                     icon={<IoEnter />}
                     disabled={false}
@@ -108,4 +101,6 @@ export default function Section({
       )}
     </div>
   );
-}
+};
+
+export default memo(Section);

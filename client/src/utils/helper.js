@@ -30,3 +30,9 @@ export const cn = (...args) => {
 export const isIdInRooms = (availableRooms, id) => {
   return id in availableRooms;
 };
+
+export const findSocket = (data, socketId) => {
+  console.log(data, socketId);
+  console.log(data.filter((s) => s.id === socketId)[0]);
+  return data.filter((s) => s.id === socketId)[0];
+};

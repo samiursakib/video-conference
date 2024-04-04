@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { cn, setVideoRef } from '../utils/helper';
+import React, { memo, useEffect, useRef } from 'react';
+import { setVideoRef } from '../utils/helper';
 
 const PeerVideo = ({ peerId, stream }) => {
   const videoRef = useRef(null);
@@ -16,4 +16,4 @@ const PeerVideo = ({ peerId, stream }) => {
   );
 };
 
-export default PeerVideo;
+export default memo(PeerVideo);
