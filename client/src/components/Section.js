@@ -23,37 +23,36 @@ const Section = ({
     setTransited(true);
     setConferenceId(conferenceId);
   };
-  console.log(socketsData);
   return (
     <div className="grow">
-      <div className="">
-        <div className="my-5 flex flex-col sm:flex-row items-start sm:justify-between gap-2">
-          <div className="font-semibold">{title}</div>
-          {forRooms && (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={room}
-                onChange={(e) => setRoom(e.target.value)}
-              />
-              <Button
-                // action={'Create'}
-                onClick={() => {
-                  joinRoom(socket, room, setJoinedRooms);
-                  setRoom('');
-                }}
-                icon={<MdLibraryAdd />}
-                disabled={!room}
-              />
-            </div>
-          )}
-        </div>
+      <div className="my-5 flex flex-col sm:flex-row items-start sm:justify-between">
+        <div className="font-semibold uppercase">{title}</div>
+        {forRooms && (
+          <div className="w-full sm:w-64 flex items-center gap-2 mt-2 sm:mt-0">
+            <input
+              className="w-0 grow"
+              type="text"
+              value={room}
+              onChange={(e) => setRoom(e.target.value)}
+            />
+            <Button
+              // action={'Create'}
+              onClick={() => {
+                joinRoom(socket, room, setJoinedRooms);
+                setRoom('');
+              }}
+              icon={<MdLibraryAdd />}
+              disabled={!room}
+              circle
+            />
+          </div>
+        )}
       </div>
       {list?.length ? (
         <ul className="flex flex-col">
           {list.map((item, index) => (
             <li
-              className="flex justify-between items-center hover:bg-[#fff]/20 pl-3 pr-1 py-1 rounded-md transition-all duration"
+              className="flex justify-between items-center pl-3 pr-1 py-1 rounded-md transition-all duration"
               key={index}
             >
               <span className="text-md">
@@ -66,6 +65,7 @@ const Section = ({
                       // action={'Join'}
                       onClick={() => joinRoom(socket, item, setJoinedRooms)}
                       icon={<MdJoinFull />}
+                      circle
                     />
                   ) : (
                     <div className="flex space-x-2">
@@ -73,11 +73,13 @@ const Section = ({
                         // action={'Enter'}
                         onClick={() => enterConference(item)}
                         icon={<IoEnter />}
+                        circle
                       />
                       <Button
                         // action={'Leave'}
                         onClick={() => leaveRoom(socket, item, setJoinedRooms)}
                         icon={<IoLogOut />}
+                        circle
                       />
                     </div>
                   )}
@@ -89,7 +91,7 @@ const Section = ({
                     onClick={() => enterConference(item)}
                     icon={<IoEnter />}
                     disabled={false}
-                    full
+                    circle
                   />
                 </span>
               )}
@@ -97,7 +99,9 @@ const Section = ({
           ))}
         </ul>
       ) : (
-        <span className="mt-2 block">No {title.toLowerCase()} available</span>
+        <div className="h-28 flex justify-center items-center text-lg">
+          No {title.toLowerCase()} available
+        </div>
       )}
     </div>
   );

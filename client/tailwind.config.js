@@ -4,12 +4,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        white: '#eee',
+        white: '#eeeb',
         sky: '#24a6af',
-        lightsky: '#eeeef2',
+        lightsky: '#35bac3',
         blue: '#17202e',
-        lightblue: '#f5f6fa',
+        lightblue: '#1e2c43',
         gray: '#6b758e',
+        dim: '#334155',
         black: '#111',
       },
       spacing: {

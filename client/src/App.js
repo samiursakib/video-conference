@@ -108,123 +108,137 @@ function App() {
     joinedRooms,
   };
 
-  console.log(socketsData);
+  console.log(peersOnConference);
+  console.log(conferenceId);
 
   return (
-    <div className="w-full h-screen mx-auto bg-blue text-white">
-      {!transited ? (
-        <div className="w-full flex flex-col">
-          <Title title={'your'} id={socket?.username} />
-          <Profile
-            avatarUrl={socket?.avatarUrl}
-            username={socket?.username}
-            socketUsername={socketUsername}
-            setSocketUsername={setSocketUsername}
-            setRunSetUsername={setRunSetUsername}
-          />
-          <Section {...usersProps} />
-          <Section {...roomsProps} />
-        </div>
-      ) : (
-        <div className="flex flex-col h-full">
-          <div className="bg-slate-900 basis-16 text-slate-400 flex justify-center items-center flex-col gap-1">
-            <span className="">{socket?.username}</span>
-            <span className="text-sm">{conferenceId}</span>
-          </div>
-          <div className="grow flex">
-            <div className="w-2/3 flex flex-wrap justify-around items-center">
-              {Object.keys(peersOnConference).length !== 0 ? (
-                Object.keys(peersOnConference).map((key) => (
-                  <PeerVideo
-                    key={key}
-                    peerId={key}
-                    stream={peersOnConference[key]}
-                  />
-                ))
-              ) : (
-                <div className="">No one is here</div>
-              )}
-            </div>
-            {/* {isConversationOpen && ( */}
-            <div className="w-1/3 flex flex-col border-l border-slate-700">
-              <div className="basis-[calc(100vh-7rem)] overflow-auto">
-                <div className="flex flex-col">
-                  <ul className="flex flex-col gap-1">
-                    {conferenceId in conversations
-                      ? conversations[conferenceId].map((m, id) => (
-                          <Message
-                            key={id}
-                            sender={findSocket(socketsData, m.sender)?.username}
-                            avatar={avatarSekeletonMale}
-                            msg={m.message}
-                          />
-                        ))
-                      : null}
-                  </ul>
+    <div className="w-full h-screen mx-auto bg-blue text-white text-2xl sm:text-xl">
+      <div className="flex flex-col h-full">
+        <Title
+          socketId={socket?.id}
+          socketUsername={socket?.username}
+          conferenceId={conferenceId}
+          conferenceUsername={findSocket(socketsData, conferenceId)}
+          transited={transited}
+        />
+        <div className="grow flex flex-col">
+          {!transited ? (
+            <div className="p-4 sm:p-0 flex flex-col">
+              <div className="w-full sm:w-3/5 max-w-screen-lg mx-auto">
+                <Profile
+                  avatarUrl={socket?.avatarUrl}
+                  username={socket?.username}
+                  socketUsername={socketUsername}
+                  setSocketUsername={setSocketUsername}
+                  setRunSetUsername={setRunSetUsername}
+                />
+              </div>
+              <div className="w-full sm:w-3/5 max-w-screen-lg mx-auto basis-[calc(100vh-8rem)] overflow-auto">
+                <div className="grow flex flex-col">
+                  <Section {...usersProps} />
+                  <Section {...roomsProps} />
                 </div>
               </div>
-              <div className="pl-2 basis-12 flex justify-between items-center">
-                <input
-                  className="w-0 grow"
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+            </div>
+          ) : (
+            <div className="grow flex">
+              <div className="w-2/3 flex flex-wrap justify-around items-center">
+                {Object.keys(peersOnConference).length !== 0 ? (
+                  Object.keys(peersOnConference).map((key) => (
+                    <PeerVideo
+                      key={key}
+                      peerId={key}
+                      stream={peersOnConference[key]}
+                    />
+                  ))
+                ) : (
+                  <div className="">No one is here</div>
+                )}
+              </div>
+              {/* {isConversationOpen && ( */}
+              <div className="w-1/3 flex flex-col border-l border-slate-700">
+                <div className="basis-[calc(100vh-8rem)] overflow-auto">
+                  <div className="flex flex-col">
+                    <ul className="flex flex-col gap-1">
+                      {conferenceId in conversations
+                        ? conversations[conferenceId].map((m, id) => (
+                            <Message
+                              key={id}
+                              sender={
+                                findSocket(socketsData, m.sender)?.username
+                              }
+                              avatar={avatarSekeletonMale}
+                              msg={m.message}
+                            />
+                          ))
+                        : null}
+                    </ul>
+                  </div>
+                </div>
+                <div className="px-3 basis-16 flex justify-between items-center space-x-2">
+                  <input
+                    className="w-0 grow"
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <Button
+                    className="rotate-45"
+                    onClick={() =>
+                      sendMessage(
+                        socket,
+                        message,
+                        conferenceId,
+                        setMessage,
+                        setConversations
+                      )
+                    }
+                    icon={<BsFillSendFill />}
+                    disabled={!message}
+                    circle
+                  />
+                </div>
+              </div>
+              {/* )} */}
+              <div className="pt-2 basis-16 flex flex-col items-center gap-4 border-l border-slate-700">
+                <Button
+                  onClick={() => setTransited(false)}
+                  icon={<IoMdArrowRoundBack />}
+                  disabled={false}
+                  circle
                 />
                 <Button
-                  className="basis-10"
+                  onClick={() => setIsConversationOpen((prev) => !prev)}
+                  icon={<AiFillMessage />}
+                  circle
+                />
+                <Button
+                  onClick={async () => await startCall(socket, conferenceId)}
+                  icon={<MdAddCall />}
+                  disabled={false}
+                  circle
+                />
+                <Button
                   onClick={() =>
-                    sendMessage(
+                    endCall(
                       socket,
-                      message,
+                      calls,
+                      setCalls,
                       conferenceId,
-                      setMessage,
-                      setConversations
+                      setCallOthersTriggered,
+                      setPeersOnConference
                     )
                   }
-                  icon={<BsFillSendFill />}
-                  disabled={!message}
+                  icon={<MdCallEnd />}
+                  disabled={false}
+                  circle
+                  color="#c92a2a"
                 />
               </div>
             </div>
-            {/* )} */}
-            <div className="basis-16 flex flex-col items-center gap-4 border-l border-slate-700">
-              <Button
-                onClick={() => setTransited(false)}
-                icon={<IoMdArrowRoundBack />}
-                disabled={false}
-                circle
-              />
-              <Button
-                onClick={() => setIsConversationOpen((prev) => !prev)}
-                icon={<AiFillMessage />}
-                circle
-              />
-              <Button
-                onClick={async () => await startCall(socket, conferenceId)}
-                icon={<MdAddCall />}
-                disabled={false}
-                circle
-              />
-              <Button
-                onClick={() =>
-                  endCall(
-                    socket,
-                    calls,
-                    setCalls,
-                    conferenceId,
-                    setCallOthersTriggered,
-                    setPeersOnConference
-                  )
-                }
-                icon={<MdCallEnd />}
-                disabled={false}
-                circle
-                color={'#F54545'}
-              />
-            </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

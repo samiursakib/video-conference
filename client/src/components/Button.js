@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { cn } from '../utils/helper';
 
 const Button = ({
   className,
@@ -12,11 +13,16 @@ const Button = ({
 }) => {
   return (
     <button
-      className={`flex items-center justify-center text-bermuda-dark focus:outline focus:outline-bermuda-dark px-1 py-1 space-x-2 ${
-        full ? 'w-full h-full' : ''
-      } disabled:bg-transparent ${
-        circle ? 'rounded-full w-[40px] h-[40px]' : 'rounded-sm h-full'
-      } ${className ? className : ''} ${color ? `bg-[#c92a2a]` : ''}`}
+      className={cn([
+        'flex items-center justify-center hover:bg-dim px-1 py-1 space-x-2',
+        className,
+        {
+          'w-full h-full': full,
+          'rounded-full w-[40px] h-[40px]': circle,
+          'rounded-sm h-full': !circle,
+          [`bg-[${color}]/70 hover:bg-[${color}]`]: color,
+        },
+      ])}
       onClick={onClick}
       disabled={disabled}
     >

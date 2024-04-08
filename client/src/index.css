@@ -24,6 +24,6 @@ code {
     @apply p-2 bg-transparent text-xs outline-none border border-slate-700 rounded-md;
   }
   button {
-    @apply p-2  outline-none focus:ring-0 focus:outline-none text-2xl hover:cursor-pointer;
+    @apply p-2 text-2xl hover:cursor-pointer;
   }
 }
