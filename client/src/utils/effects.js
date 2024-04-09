@@ -9,8 +9,8 @@ import {
   isIdInRooms,
 } from './helper';
 
-const host = 'https://video-conference-server-ncpz.onrender.com';
-// const host = 'http://localhost:80';
+// const host = 'https://video-conference-server-ncpz.onrender.com';
+const host = 'http://localhost:80';
 
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);

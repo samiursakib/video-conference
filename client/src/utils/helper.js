@@ -32,7 +32,5 @@ export const isIdInRooms = (availableRooms, id) => {
 };
 
 export const findSocket = (data, socketId) => {
-  console.log(data, socketId);
-  console.log(data.filter((s) => s.id === socketId)[0]);
   return data.filter((s) => s.id === socketId)[0];
 };
