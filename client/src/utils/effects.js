@@ -2,15 +2,10 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 
-import {
-  findSocket,
-  getMedia,
-  isConferenceIdInRooms,
-  isIdInRooms,
-} from './helper';
+import { getMedia } from './helper';
 
-// const host = 'https://video-conference-server-ncpz.onrender.com';
-const host = 'http://localhost:80';
+const host = 'https://video-conference-server-ncpz.onrender.com';
+// const host = 'http://localhost:80';
 
 export const useSocketInitialization = (socketUsername) => {
   const [socket, setSocket] = useState(null);
@@ -49,7 +44,6 @@ export const useSocketEventListener = (
   setPeersOnConference,
   setPeerIdsOnConference,
   setAvailableUsers,
-  availableRooms,
   setAvailableRooms,
   setConferenceId,
   setCallOthersTriggered,
@@ -57,7 +51,6 @@ export const useSocketEventListener = (
   calls,
   setCalls,
   setConversations,
-  socketsData,
   setSocketsData
 ) => {
   useEffect(() => {
@@ -124,7 +117,7 @@ export const useSocketEventListener = (
     });
     socket?.on('updateData', (fetchedSocketsData) => {
       setSocketsData(fetchedSocketsData);
-      console.log('effect: ', fetchedSocketsData);
+      // console.log('effect: ', fetchedSocketsData);
     });
     socket?.emit('fetchData');
     peer?.on('call', async (call) => {

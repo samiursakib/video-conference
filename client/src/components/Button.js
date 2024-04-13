@@ -14,7 +14,7 @@ const Button = ({
   return (
     <button
       className={cn([
-        'flex items-center justify-center hover:bg-dim px-1 py-1 space-x-2',
+        'flex items-center justify-center hover:bg-dim px-1 py-1 space-x-2 hover:cursor-pointer',
         className,
         {
           'w-full h-full': full,

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { MdJoinFull, MdLibraryAdd } from 'react-icons/md';
 import { IoEnter, IoLogOut } from 'react-icons/io5';
 import Button from './Button';
@@ -8,8 +8,6 @@ const Section = ({
   socket,
   setConferenceId,
   setTransited,
-  room,
-  setRoom,
   socketsData,
   title,
   list,
@@ -19,10 +17,13 @@ const Section = ({
   joinedRooms,
   setJoinedRooms,
 }) => {
+  const [room, setRoom] = useState('');
   const enterConference = (conferenceId) => {
     setTransited(true);
     setConferenceId(conferenceId);
   };
+
+  console.log('sec');
   return (
     <div className="grow">
       <div className="my-5 flex flex-col sm:flex-row items-start sm:justify-between">
@@ -49,10 +50,10 @@ const Section = ({
         )}
       </div>
       {list?.length ? (
-        <ul className="flex flex-col">
+        <ul className="py-2 flex flex-col bg-lightblue shadow-md rounded-lg">
           {list.map((item, index) => (
             <li
-              className="flex justify-between items-center pl-3 pr-1 py-1 rounded-md transition-all duration"
+              className="flex justify-between items-center pl-4 pr-2 rounded-md transition-all duration"
               key={index}
             >
               <span className="text-md">
@@ -99,7 +100,7 @@ const Section = ({
           ))}
         </ul>
       ) : (
-        <div className="h-28 flex justify-center items-center text-lg">
+        <div className="h-28 flex justify-center items-center text-lg bg-lightblue shadow-md rounded-lg">
           No {title.toLowerCase()} available
         </div>
       )}

@@ -7,7 +7,7 @@ const Message = ({ sender, avatar, msg }) => {
         <img src={avatar} alt="avatar-skeleton-male" />
       </div>
       <div className="grow flex flex-col basis-60">
-        <div className="">{sender}</div>
+        <div className="text-base">{sender}</div>
         <div className="text-sm text-slate-300/70">{msg}</div>
       </div>
     </li>

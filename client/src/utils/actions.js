@@ -95,3 +95,7 @@ export const endPrivateCall = (call, peerCall) => {
   peerCall?.close();
   console.log('private call ended');
 };
+
+export const scrollToLastMessage = (elem) => {
+  elem.current?.scrollIntoView({ behavior: 'smooth' });
+};
