@@ -15,25 +15,32 @@ const Profile = ({
     setRunSetUsername(true);
     setHiddenEditInput(true);
   };
+  console.log('prof');
   return (
-    <div className="py-2 flex items-center content-center gap-2">
-      <img src={avatarUrl} alt={avatarUrl} width="40px" height="40px" />
-      {hiddenEditInput ? (
-        <div className="flex-grow ml-3">{username}</div>
-      ) : (
+    <div className="w-full sm:w-3/5 max-w-screen-lg mx-auto">
+      <div className="py-2 flex items-center gap-2">
+        <img src={avatarUrl} alt={avatarUrl} width="40px" height="40px" />
         <input
-          className="w-full"
+          style={{
+            paddingLeft: '15px',
+            fontSize: '20px',
+            border: `1px solid ${hiddenEditInput ? '#33415500' : '#334155ff'}`,
+            cursor: hiddenEditInput ? 'default' : 'text',
+          }}
+          className="w-0 grow pl-2"
           type="text"
           value={socketUsername}
           onChange={(e) => setSocketUsername(e.target.value)}
+          disabled={hiddenEditInput}
         />
-      )}
-      <Button
-        onClick={hiddenEditInput ? handleStartEditInput : handleStopEditInput}
-        icon={<RiEditBoxFill />}
-        disabled={!socketUsername}
-        circle
-      />
+        <Button
+          className="w-10 h-10"
+          onClick={hiddenEditInput ? handleStartEditInput : handleStopEditInput}
+          icon={<RiEditBoxFill />}
+          disabled={!socketUsername}
+          circle
+        />
+      </div>
     </div>
   );
 };
