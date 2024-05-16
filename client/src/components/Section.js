@@ -22,8 +22,6 @@ const Section = ({
     setTransited(true);
     setConferenceId(conferenceId);
   };
-
-  console.log('sec');
   return (
     <div className="grow">
       <div className="my-5 flex flex-col sm:flex-row items-start sm:justify-between">

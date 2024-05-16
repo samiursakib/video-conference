@@ -72,6 +72,11 @@ export const useSocketEventListener = (
         });
       }
     });
+    socket?.on('receiveMediaTrackChangedControls', (controls, from) => {
+      setSocketsData((prev) =>
+        prev.map((s) => (from === s.id ? { ...s, controls } : s))
+      );
+    });
     socket?.on('joinRoomAlert', (socketId, room) => {
       //
     });
@@ -106,7 +111,6 @@ export const useSocketEventListener = (
     socket?.on(
       'receiveCallOthersTriggered',
       (peerIds, conferenceId, caller) => {
-        console.log('peerIds: ', peerIds);
         setConferenceId(socket.id === conferenceId ? caller : conferenceId);
         setCallOthersTriggered(true);
         setPeerIdsOnConference([...peerIds]);
@@ -124,11 +128,9 @@ export const useSocketEventListener = (
       try {
         setTransited(true);
         const selfStream = await getMedia();
-        console.log(peer.id, selfStream);
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
-          console.log(call.peer, remoteStream);
           setPeersOnConference((prev) => ({
             ...prev,
             [call.peer]: remoteStream,

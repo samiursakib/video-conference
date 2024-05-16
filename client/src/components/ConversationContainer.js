@@ -42,14 +42,21 @@ const ConversationContainer = ({
         {conferenceId in conversations ? (
           <div className="flex flex-col">
             <ul className="flex flex-col gap-1">
-              {conversations[conferenceId].map((m, id) => (
-                <Message
-                  key={id}
-                  sender={findSocket(socketsData, m.sender)?.username}
-                  avatar={avatarSkeletonMale}
-                  msg={m.message}
-                />
-              ))}
+              {conversations[conferenceId].map((m, id) => {
+                const foundSocket = findSocket(socketsData, m.sender);
+                return (
+                  <Message
+                    key={id}
+                    sender={
+                      foundSocket?.username === 'username'
+                        ? foundSocket?.id
+                        : foundSocket?.username
+                    }
+                    avatar={avatarSkeletonMale}
+                    msg={m.message}
+                  />
+                );
+              })}
               <li ref={messageEndRef}></li>
             </ul>
           </div>
@@ -65,13 +72,9 @@ const ConversationContainer = ({
               'hidden hover:cursor-pointer': scrolledHeight <= 100,
             },
           ])}
-          onClick={() => {
-            setScrollBottom((prev) => !prev);
-            console.log('scrolling in to view');
-          }}
+          onClick={() => setScrollBottom((prev) => !prev)}
           icon={<IoMdArrowRoundBack />}
           circle
-          disabled={false}
         />
       </div>
       <div className="px-3 basis-16 flex justify-between items-center space-x-2">

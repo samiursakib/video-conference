@@ -91,29 +91,50 @@ function App() {
     list: availableRooms,
     forRooms: true,
   };
-
-  console.log('app');
+  const foundSocket = findSocket(socketsData, conferenceId);
+  const titleProps = {
+    socketId: socket?.id,
+    socketUsername: socket?.username,
+    conference:
+      foundSocket?.username === 'username'
+        ? foundSocket?.id
+        : foundSocket?.username,
+    transited,
+  };
+  const profileProps = {
+    avatarUrl: socket?.avatarUrl,
+    username: socket?.username,
+    socketUsername,
+    setSocketUsername,
+    setRunSetUsername,
+  };
+  const conversationContainerProps = {
+    conversations,
+    conferenceId,
+    socketsData,
+    socket,
+    setConversations,
+  };
+  const controlsProps = {
+    setTransited,
+    setIsConversationOpen,
+    socket,
+    conferenceId,
+    calls,
+    setCalls,
+    setCallOthersTriggered,
+    setPeersOnConference,
+    isOnCall: Object.keys(peersOnConference).length !== 0,
+  };
 
   return (
     <div className="w-full h-screen mx-auto bg-blue text-white text-2xl sm:text-xl">
       <div className="flex flex-col h-full">
-        <Title
-          socketId={socket?.id}
-          socketUsername={socket?.username}
-          conferenceId={conferenceId}
-          conferenceUsername={findSocket(socketsData, conferenceId)}
-          transited={transited}
-        />
+        <Title {...titleProps} />
         <div className="grow flex flex-col">
           {!transited ? (
             <div className="p-4 sm:p-0 flex flex-col">
-              <Profile
-                avatarUrl={socket?.avatarUrl}
-                username={socket?.username}
-                socketUsername={socketUsername}
-                setSocketUsername={setSocketUsername}
-                setRunSetUsername={setRunSetUsername}
-              />
+              <Profile {...profileProps} />
               <div className="w-full sm:w-3/5 max-w-screen-lg mx-auto basis-[calc(100vh-8rem)] overflow-auto">
                 <div className="grow flex flex-col">
                   <Section {...usersProps} />
@@ -125,34 +146,31 @@ function App() {
             <div className="grow flex">
               <div className="w-2/3 flex flex-wrap justify-around items-center">
                 {Object.keys(peersOnConference).length !== 0 ? (
-                  Object.keys(peersOnConference).map((key) => (
-                    <PeerVideo
-                      key={key}
-                      peerId={key}
-                      stream={peersOnConference[key]}
-                    />
-                  ))
+                  Object.keys(peersOnConference).map((key) => {
+                    const foundSocket = findSocket(socketsData, key);
+                    return (
+                      <PeerVideo
+                        key={key}
+                        peer={
+                          foundSocket?.username === 'username'
+                            ? foundSocket?.id
+                            : foundSocket?.username
+                        }
+                        stream={peersOnConference[key]}
+                        own={foundSocket?.id === socket?.id}
+                        socket={socket}
+                        conferenceId={conferenceId}
+                        controls={foundSocket?.controls}
+                        setSocketsData={setSocketsData}
+                      />
+                    );
+                  })
                 ) : (
                   <div className="">No one is here</div>
                 )}
               </div>
-              <ConversationContainer
-                conversations={conversations}
-                conferenceId={conferenceId}
-                socketsData={socketsData}
-                socket={socket}
-                setConversations={setConversations}
-              />
-              <Controls
-                setTransited={setTransited}
-                setIsConversationOpen={setIsConversationOpen}
-                socket={socket}
-                conferenceId={conferenceId}
-                calls={calls}
-                setCalls={setCalls}
-                setCallOthersTriggered={setCallOthersTriggered}
-                setPeersOnConference={setPeersOnConference}
-              />
+              <ConversationContainer {...conversationContainerProps} />
+              <Controls {...controlsProps} />
             </div>
           )}
         </div>

@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 export const getMedia = async () => {
   const mediaStream = await navigator.mediaDevices.getUserMedia({
-    audio: false,
+    audio: true,
     video: true,
   });
   return mediaStream;
