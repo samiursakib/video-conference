@@ -14,6 +14,7 @@ const Controls = ({
   setCalls,
   setCallOthersTriggered,
   setPeersOnConference,
+  isOnCall,
 }) => {
   return (
     <div className="pt-2 basis-16 flex flex-col items-center gap-4 border-l border-slate-700">
@@ -28,28 +29,31 @@ const Controls = ({
         icon={<AiFillMessage />}
         circle
       />
-      <Button
-        onClick={async () => await startCall(socket, conferenceId)}
-        icon={<MdAddCall />}
-        disabled={false}
-        circle
-      />
-      <Button
-        onClick={() =>
-          endCall(
-            socket,
-            calls,
-            setCalls,
-            conferenceId,
-            setCallOthersTriggered,
-            setPeersOnConference
-          )
-        }
-        icon={<MdCallEnd />}
-        disabled={false}
-        circle
-        color={'#c92a2a'}
-      />
+      {!isOnCall ? (
+        <Button
+          onClick={async () => await startCall(socket, conferenceId)}
+          icon={<MdAddCall />}
+          disabled={false}
+          circle
+        />
+      ) : (
+        <Button
+          className="bg-[#c92a2a]/70 hover:bg-[#c92a2a]"
+          onClick={() =>
+            endCall(
+              socket,
+              calls,
+              setCalls,
+              conferenceId,
+              setCallOthersTriggered,
+              setPeersOnConference
+            )
+          }
+          icon={<MdCallEnd />}
+          disabled={false}
+          circle
+        />
+      )}
     </div>
   );
 };

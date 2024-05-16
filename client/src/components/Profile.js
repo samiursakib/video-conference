@@ -15,7 +15,6 @@ const Profile = ({
     setRunSetUsername(true);
     setHiddenEditInput(true);
   };
-  console.log('prof');
   return (
     <div className="w-full sm:w-3/5 max-w-screen-lg mx-auto">
       <div className="py-2 flex items-center gap-2">

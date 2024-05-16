@@ -1,5 +1,9 @@
 import { getMedia, setVideoRef } from './helper';
 
+export const sendMediaTrackChangedControls = (socket, controls, to) => {
+  socket.emit('sendMediaTrackChangedControls', controls, to);
+};
+
 export const sendMessage = (socket, msg, to, setMessage, setConversations) => {
   socket.emit('sendMessage', msg, to);
   setMessage('');
