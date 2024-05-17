@@ -22,9 +22,7 @@ const PeerVideo = ({ peer, stream, own, socket, conferenceId, controls }) => {
     setVideoTrackEnabled(controls?.videoTrackEnabled);
   }, [controls]);
   const handleMuteUnmute = () => {
-    if (!own) {
-      return;
-    }
+    if (!own) return;
     let [audioTrack] = stream.getAudioTracks();
     audioTrack.enabled = !audioTrack.enabled;
     setAudioTrackEnabled(audioTrack.enabled);
@@ -35,9 +33,7 @@ const PeerVideo = ({ peer, stream, own, socket, conferenceId, controls }) => {
     );
   };
   const handleCameraOnOff = () => {
-    if (!own) {
-      return;
-    }
+    if (!own) return;
     let [videoTrack] = stream.getVideoTracks();
     videoTrack.enabled = !videoTrack.enabled;
     setVideoTrackEnabled(videoTrack.enabled);

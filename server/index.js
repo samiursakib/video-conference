@@ -27,6 +27,7 @@ io.on('connection', async (socket) => {
   console.log('new user connected: ', socket.id);
   socket.data.id = socket.id;
   socket.data.username = 'username';
+  socket.data.controls = { audioTrackEnabled: true, videoTrackEnabled: true };
   const data = fetchData(io);
   const fetchedSocketsData = await fetchSocketsData(io);
   io.emit('receiveData', data);
@@ -37,6 +38,13 @@ io.on('connection', async (socket) => {
     socket.broadcast.to(to).emit('receiveMessage', msg, socket.id, to);
   });
 
+  socket.on('sendMediaTrackChangedControls', (controls, to) => {
+    console.log('controls changed of ', socket.id, ' to ', controls);
+    socket.data.controls = controls;
+    socket.broadcast
+      .to(to)
+      .emit('receiveMediaTrackChangedControls', controls, socket.id, to);
+  });
   socket.on('joinRoom', (room) => {
     socket.join(room);
     const data = fetchData(io);
@@ -79,6 +87,7 @@ io.on('connection', async (socket) => {
   socket.on('changeData', async (socketUsername) => {
     socket.data.id = socket.id;
     socket.data.username = socketUsername;
+    // socket.data.controls = { audioTrackEnabled, videoTrackEnabled };
     const fetchedSocketsData = await fetchSocketsData(io);
     console.log(fetchedSocketsData);
     io.emit('updateData', fetchedSocketsData);
