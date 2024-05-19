@@ -16,6 +16,12 @@ module.exports = {
       spacing: {
         '3/4': '75%',
       },
+      keyframes: {
+        callingDot: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(5px)' },
+        },
+      },
     },
   },
   plugins: [],
