@@ -2,6 +2,14 @@
 
 A video conference app along with messaging functionality for both private and group conversations.
 
+## Tools Used
+
+![react](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![node](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![express](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
+![socketio](https://img.shields.io/badge/Socket.io-010101?&style=for-the-badge&logo=Socket.io&logoColor=white)
+![peerjs](https://img.shields.io/badge/peer.js-orange?style=for-the-badge&logo=https://images.app.goo.gl/2nmuxnYCc1NmzJ6n8)
+
 ## Features
 
 - End-to-end message
