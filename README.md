@@ -2,6 +2,10 @@
 
 A video conference app along with messaging functionality for both private and group conversations.
 
+## Live View
+
+[Live preview](https://video-conference-client.vercel.app/)
+
 ## Tools Used
 
 ![react](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
