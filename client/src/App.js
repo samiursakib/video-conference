@@ -17,6 +17,9 @@ import { findSocket } from './utils/helper';
 import ConversationContainer from './components/ConversationContainer';
 import Controls from './components/Controls';
 import { useState } from 'react';
+import Modal from './components/Modal';
+import CallerModal from './components/CallerModal';
+import UsernameModal from './components/UsernameModal';
 
 function App() {
   const [calls, setCalls] = useState({});
@@ -29,10 +32,11 @@ function App() {
   const [peersOnConference, setPeersOnConference] = useState({});
   const [peerIdsOnConference, setPeerIdsOnConference] = useState([]);
   const [callOthersTriggered, setCallOthersTriggered] = useState(false);
-  const [socketUsername, setSocketUsername] = useState('username');
+  const [socketUsername, setSocketUsername] = useState('');
   const [isConversationOpen, setIsConversationOpen] = useState(true);
   const [conversations, setConversations] = useState({});
   const [socketsData, setSocketsData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(true);
 
   const { socket, setSocket, peer, setPeer } =
     useSocketInitialization(socketUsername);
@@ -56,6 +60,7 @@ function App() {
     setSocketsData
   );
   useCallOthers(
+    socket,
     peer,
     callOthersTriggered,
     peersOnConference,
@@ -95,10 +100,11 @@ function App() {
   const titleProps = {
     socketId: socket?.id,
     socketUsername: socket?.username,
-    conference:
-      foundSocket?.username === 'username'
-        ? foundSocket?.id
-        : foundSocket?.username,
+    conference: !foundSocket
+      ? conferenceId
+      : foundSocket?.username === 'username'
+      ? foundSocket?.id
+      : foundSocket?.username,
     transited,
   };
   const profileProps = {
@@ -126,6 +132,7 @@ function App() {
     setPeersOnConference,
     isOnCall: Object.keys(peersOnConference).length !== 0,
   };
+  console.log(peersOnConference, socketsData);
 
   return (
     <div className="w-full h-screen mx-auto bg-blue text-white text-2xl sm:text-xl">
@@ -175,6 +182,15 @@ function App() {
           )}
         </div>
       </div>
+      <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
+        {/* <CallerModal /> */}
+        <UsernameModal
+          socketUsername={socketUsername}
+          setSocketUsername={setSocketUsername}
+          setRunSetUsername={setRunSetUsername}
+          setIsModalOpen={setIsModalOpen}
+        />
+      </Modal>
     </div>
   );
 }

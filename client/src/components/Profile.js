@@ -1,5 +1,6 @@
 import React, { memo, useState } from 'react';
 import { RiEditBoxFill } from 'react-icons/ri';
+import { ImCheckmark } from 'react-icons/im';
 import Button from './Button';
 
 const Profile = ({
@@ -35,7 +36,7 @@ const Profile = ({
         <Button
           className="w-10 h-10"
           onClick={hiddenEditInput ? handleStartEditInput : handleStopEditInput}
-          icon={<RiEditBoxFill />}
+          icon={!hiddenEditInput ? <ImCheckmark /> : <RiEditBoxFill />}
           disabled={!socketUsername}
           circle
         />

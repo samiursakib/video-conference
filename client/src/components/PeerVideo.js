@@ -19,8 +19,10 @@ const PeerVideo = ({ peer, stream, own, socket, conferenceId, controls }) => {
   }, [stream]);
   useEffect(() => {
     setAudioTrackEnabled(controls?.audioTrackEnabled);
+    stream.getAudioTracks()[0].enabled = controls?.audioTrackEnabled;
     setVideoTrackEnabled(controls?.videoTrackEnabled);
-  }, [controls]);
+    stream.getVideoTracks()[0].enabled = controls?.videoTrackEnabled;
+  }, [stream, controls]);
   const handleMuteUnmute = () => {
     if (!own) return;
     let [audioTrack] = stream.getAudioTracks();

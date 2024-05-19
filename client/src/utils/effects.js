@@ -131,15 +131,23 @@ export const useSocketEventListener = (
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
         call.answer(selfStream);
         call.on('stream', (remoteStream) => {
+          console.log(call.peer, remoteStream);
           setPeersOnConference((prev) => ({
             ...prev,
             [call.peer]: remoteStream,
           }));
         });
         call.on('close', () => {
-          selfStream.getTracks().forEach((track) => track.stop());
+          selfStream.getTracks().forEach((track) => {
+            console.log(track);
+            track.stop();
+            console.log(track);
+            return track;
+          });
+          console.log('effect');
         });
         call.on('error', (e) => console.log('error in peer call'));
+        setCalls((prev) => ({ ...prev, [call.peer]: call }));
       } catch (e) {
         console.log('error while receiving call');
       }
@@ -151,6 +159,7 @@ export const useSocketEventListener = (
 };
 
 export const useCallOthers = (
+  socket,
   peer,
   callOthersTriggered,
   peersOnConference,
@@ -166,21 +175,31 @@ export const useCallOthers = (
         const selfStream = await getMedia();
         // console.log(peer.id, selfStream);
         setPeersOnConference((prev) => ({ ...prev, [peer.id]: selfStream }));
-        // console.log('peerIdsOnConference: ', peerIdsOnConference);
+        console.log('peerIdsOnConference: ', peerIdsOnConference);
         for (const remotePeer of peerIdsOnConference) {
+          console.log('*', remotePeer);
           if (remotePeer === peer.id) continue;
           const call = peer.call(remotePeer, selfStream);
           call?.on('stream', (remoteStream) => {
-            // console.log(remotePeer, remoteStream);
+            console.log(remotePeer, remoteStream);
             setPeersOnConference((prev) => ({
               ...prev,
               [remotePeer]: remoteStream,
             }));
           });
           call?.on('close', () => {
-            selfStream.getTracks().forEach((track) => track.stop());
+            selfStream.getTracks().forEach((track) => {
+              console.log(track);
+              track.stop();
+              console.log(track);
+              return track;
+            });
+            console.log('action');
           });
-          call?.on('error', (e) => console.log('error while on group call', e));
+          call?.on('error', (e) => {
+            console.log('error on call in action', e);
+            console.error(e);
+          });
           setCalls((prev) => ({ ...prev, [remotePeer]: call }));
         }
       }

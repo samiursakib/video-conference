@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import Button from './Button';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { AiFillMessage } from 'react-icons/ai';
-import { MdAddCall, MdCallEnd } from 'react-icons/md';
+import { MdCall, MdCallEnd } from 'react-icons/md';
 import { endCall, startCall } from '../utils/actions';
 
 const Controls = ({
@@ -32,7 +32,7 @@ const Controls = ({
       {!isOnCall ? (
         <Button
           onClick={async () => await startCall(socket, conferenceId)}
-          icon={<MdAddCall />}
+          icon={<MdCall />}
           disabled={false}
           circle
         />
